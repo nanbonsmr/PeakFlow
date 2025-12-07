@@ -1,20 +1,34 @@
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
-import { getArticleById, getRelatedArticles } from "@/data/articles";
+import { useArticle, useRelatedArticles } from "@/hooks/useArticles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Article = () => {
   const { id } = useParams<{ id: string }>();
-  const article = id ? getArticleById(id) : undefined;
+  const { article, loading, error } = useArticle(id);
+  const { articles: relatedArticles, loading: relatedLoading } = useRelatedArticles(id, article?.category);
   
-  if (!article) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background animate-fade-in">
+        <Header />
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Skeleton className="w-full h-[400px] rounded-2xl mb-8" />
+          <Skeleton className="h-12 w-3/4 mb-4" />
+          <Skeleton className="h-6 w-1/2 mb-8" />
+          <Skeleton className="h-40 w-full" />
+        </main>
+      </div>
+    );
+  }
+  
+  if (!article || error) {
     return <Navigate to="/404" replace />;
   }
-
-  const relatedArticles = getRelatedArticles(article.id);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -75,21 +89,21 @@ const Article = () => {
               {article.title}
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-8">
-              {article.subtitle}
-            </p>
+            {article.excerpt && (
+              <p className="text-xl text-muted-foreground mb-8">
+                {article.excerpt}
+              </p>
+            )}
 
             {/* Author Info */}
             <div className="flex items-center justify-between border-t border-b border-border py-6">
               <div className="flex items-center gap-4">
-                <img
-                  src={article.author.avatar}
-                  alt={article.author.name}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
+                <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center text-xl font-semibold">
+                  {article.author.charAt(0)}
+                </div>
                 <div>
-                  <p className="font-semibold">{article.author.name}</p>
-                  <p className="text-sm text-muted-foreground">{article.author.bio}</p>
+                  <p className="font-semibold">{article.author}</p>
+                  <p className="text-sm text-muted-foreground">Author</p>
                 </div>
               </div>
 
@@ -135,38 +149,16 @@ const Article = () => {
 
           {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
-            <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-              {article.content.introduction}
-            </p>
-
-            {article.content.sections.map((section, index) => (
-              <div key={index} className="mb-10">
-                <h2 className="text-3xl font-bold mb-4">{section.heading}</h2>
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {section.content}
-                </p>
-              </div>
-            ))}
-
-            <div className="mt-12 p-6 rounded-2xl bg-muted border-l-4 border-accent">
-              <p className="text-lg leading-relaxed italic text-foreground">
-                {article.content.conclusion}
+            {article.content ? (
+              <div 
+                className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />') }}
+              />
+            ) : (
+              <p className="text-lg leading-relaxed text-muted-foreground">
+                {article.excerpt || "No content available."}
               </p>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="mb-12 pb-12 border-b border-border">
-            <div className="flex flex-wrap gap-3">
-              {article.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-4 py-2 rounded-full text-sm bg-muted text-foreground"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
+            )}
           </div>
 
           {/* Mobile Share Buttons */}
@@ -221,18 +213,35 @@ const Article = () => {
         </article>
 
         {/* Related Articles */}
-        <section className="bg-muted py-16 animate-fade-in">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold mb-8 animate-slide-up">You might also like</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedArticles.map((relatedArticle, index) => (
-                <div key={relatedArticle.id} className={`animate-slide-up stagger-${Math.min(index + 1, 3)}`}>
-                  <ArticleCard {...relatedArticle} size="small" />
+        {relatedArticles.length > 0 && (
+          <section className="bg-muted py-16 animate-fade-in">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold mb-8 animate-slide-up">You might also like</h2>
+              {relatedLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedArticles.map((relatedArticle, index) => (
+                    <div key={relatedArticle.id} className={`animate-slide-up stagger-${Math.min(index + 1, 3)}`}>
+                      <ArticleCard 
+                        id={relatedArticle.id}
+                        title={relatedArticle.title}
+                        category={relatedArticle.category}
+                        date={relatedArticle.date}
+                        image={relatedArticle.image}
+                        size="small" 
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );

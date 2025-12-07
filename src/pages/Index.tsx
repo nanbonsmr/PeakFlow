@@ -4,14 +4,15 @@ import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
-import { articles } from "@/data/articles";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useArticles } from "@/hooks/useArticles";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
+  const { articles, loading } = useArticles();
   const featuredArticles = articles.slice(0, 6);
   const [draftCount, setDraftCount] = useState(0);
 
@@ -44,6 +45,7 @@ const Index = () => {
       supabase.removeChannel(channel);
     };
   }, [isAdmin]);
+
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <Header />
@@ -64,13 +66,33 @@ const Index = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredArticles.map((article, index) => (
-              <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
-                <ArticleCard {...article} size="small" />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
+              ))}
+            </div>
+          ) : featuredArticles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredArticles.map((article, index) => (
+                <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
+                  <ArticleCard 
+                    id={article.id}
+                    title={article.title}
+                    category={article.category}
+                    date={article.date}
+                    image={article.image}
+                    size="small" 
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-muted-foreground">
+              <p className="text-lg">No articles published yet.</p>
+              <p className="text-sm mt-2">Check back soon for new content!</p>
+            </div>
+          )}
         </section>
 
         {/* Newsletter Section */}
