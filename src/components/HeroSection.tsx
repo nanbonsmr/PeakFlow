@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Instagram, Facebook, Linkedin, Sparkles, Edit, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
@@ -27,6 +28,10 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
+  );
 
   useEffect(() => {
     if (!api) return;
@@ -60,7 +65,12 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
         {/* Left side - Image Carousel */}
         <div className="relative aspect-[4/3] md:aspect-auto rounded-[2rem] overflow-hidden animate-scale-in group">
           {hasFeatures ? (
-            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full h-full">
+            <Carousel 
+              setApi={setApi} 
+              opts={{ loop: true }} 
+              plugins={[autoplayPlugin.current]}
+              className="w-full h-full"
+            >
               <CarouselContent className="h-full -ml-0">
                 {featuredArticles.map((article) => (
                   <CarouselItem key={article.id} className="h-full pl-0">
