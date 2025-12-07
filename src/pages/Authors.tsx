@@ -44,7 +44,7 @@ const Authors = () => {
             Meet Our Authors
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            The voices behind Perspective—experienced writers, practitioners, and thoughtful explorers 
+            The voices behind PeakFlow—experienced writers, practitioners, and thoughtful explorers 
             who bring diverse perspectives and genuine insights to every article.
           </p>
         </div>

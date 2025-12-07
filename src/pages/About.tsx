@@ -11,7 +11,7 @@ const About = () => {
         {/* Hero Section */}
         <div className="mb-16 text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
-            About Perspective
+            About PeakFlow
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-slide-up stagger-1">
             A space for exploring ideas, finding inspiration, and discovering new ways of seeing the world.
@@ -22,13 +22,13 @@ const About = () => {
         <section className="mb-16 space-y-6 text-muted-foreground animate-slide-up stagger-2">
           <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
           <p>
-            Perspective began with a simple question: What if we could create a space where thoughtful ideas, 
+            PeakFlow began with a simple question: What if we could create a space where thoughtful ideas, 
             meaningful stories, and practical wisdom come together to enrich our daily lives?
           </p>
           <p>
             In a world saturated with information, we felt the need for something different—a publication that 
             prioritizes depth over speed, quality over quantity, and authentic connection over viral content. 
-            Perspective is our answer to that need.
+            PeakFlow is our answer to that need.
           </p>
           <p>
             We explore topics that matter: wellness practices that actually work, travel experiences that transform 
@@ -42,7 +42,7 @@ const About = () => {
           <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
-              We believe that how we see the world shapes how we experience it. Perspective is dedicated to 
+              We believe that how we see the world shapes how we experience it. PeakFlow is dedicated to 
               offering fresh viewpoints, practical insights, and inspiring stories that help readers:
             </p>
             <ul className="space-y-3 ml-6">
