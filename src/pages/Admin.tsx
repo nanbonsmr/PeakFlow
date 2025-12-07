@@ -4,35 +4,29 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Users, FileText, Shield, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Users,
+  FileText,
+  Shield,
+  Loader2,
+  TrendingUp,
+  Eye,
+  Calendar,
+} from "lucide-react";
+import StatCard from "@/components/admin/StatCard";
+import ArticleRow from "@/components/admin/ArticleRow";
+import UserRow from "@/components/admin/UserRow";
+import ArticleDialog from "@/components/admin/ArticleDialog";
 
 interface Article {
   id: string;
@@ -53,7 +47,6 @@ interface UserRole {
   user_id: string;
   role: "admin" | "user";
   created_at: string;
-  email?: string;
 }
 
 const Admin = () => {
@@ -68,7 +61,6 @@ const Admin = () => {
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [savingArticle, setSavingArticle] = useState(false);
 
-  // Article form state
   const [articleForm, setArticleForm] = useState({
     title: "",
     excerpt: "",
@@ -275,10 +267,26 @@ const Admin = () => {
     }
   };
 
+  // Calculate stats
+  const publishedArticles = articles.filter((a) => a.published).length;
+  const draftArticles = articles.filter((a) => !a.published).length;
+  const adminUsers = users.filter((u) => u.role === "admin").length;
+  const thisMonthArticles = articles.filter((a) => {
+    const articleDate = new Date(a.created_at);
+    const now = new Date();
+    return (
+      articleDate.getMonth() === now.getMonth() &&
+      articleDate.getFullYear() === now.getFullYear()
+    );
+  }).length;
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-accent" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -288,265 +296,133 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-bold font-serif">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage articles and users
+            <h1 className="text-4xl font-bold font-serif tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Manage your content and users
             </p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full">
-            <Shield className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-accent">Admin</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20">
+              <Shield className="h-4 w-4 text-accent" />
+              <span className="text-sm font-semibold text-accent">Admin</span>
+            </div>
           </div>
         </div>
 
-        <Tabs defaultValue="articles" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1 rounded-xl">
-            <TabsTrigger
-              value="articles"
-              className="rounded-lg data-[state=active]:bg-background"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Articles
-            </TabsTrigger>
-            <TabsTrigger
-              value="users"
-              className="rounded-lg data-[state=active]:bg-background"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Users
-            </TabsTrigger>
-          </TabsList>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="animate-slide-up stagger-1">
+            <StatCard
+              title="Total Articles"
+              value={articles.length}
+              subtitle={`${publishedArticles} published, ${draftArticles} drafts`}
+              icon={FileText}
+              variant="default"
+            />
+          </div>
+          <div className="animate-slide-up stagger-2">
+            <StatCard
+              title="Published"
+              value={publishedArticles}
+              subtitle="Live on site"
+              icon={Eye}
+              variant="accent"
+            />
+          </div>
+          <div className="animate-slide-up stagger-3">
+            <StatCard
+              title="This Month"
+              value={thisMonthArticles}
+              subtitle="New articles"
+              icon={Calendar}
+              trend={{ value: 12, isPositive: true }}
+            />
+          </div>
+          <div className="animate-slide-up stagger-4">
+            <StatCard
+              title="Total Users"
+              value={users.length}
+              subtitle={`${adminUsers} admins`}
+              icon={Users}
+            />
+          </div>
+        </div>
 
-          <TabsContent value="articles" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Articles ({articles.length})</h2>
-              <Dialog
-                open={isArticleDialogOpen}
-                onOpenChange={(open) => {
-                  setIsArticleDialogOpen(open);
-                  if (!open) resetArticleForm();
-                }}
+        {/* Tabs */}
+        <Tabs defaultValue="articles" className="space-y-6 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <TabsList className="bg-muted/50 p-1.5 rounded-2xl">
+              <TabsTrigger
+                value="articles"
+                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                <DialogTrigger asChild>
-                  <Button className="rounded-xl">
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Article
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="font-serif">
-                      {editingArticle ? "Edit Article" : "Create New Article"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Title *</Label>
-                      <Input
-                        id="title"
-                        value={articleForm.title}
-                        onChange={(e) =>
-                          setArticleForm({ ...articleForm, title: e.target.value })
-                        }
-                        placeholder="Enter article title"
-                        className="rounded-xl"
-                      />
-                    </div>
+                <FileText className="h-4 w-4 mr-2" />
+                Articles
+              </TabsTrigger>
+              <TabsTrigger
+                value="users"
+                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Users
+              </TabsTrigger>
+            </TabsList>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="author">Author</Label>
-                        <Input
-                          id="author"
-                          value={articleForm.author}
-                          onChange={(e) =>
-                            setArticleForm({ ...articleForm, author: e.target.value })
-                          }
-                          placeholder="Author name"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Select
-                          value={articleForm.category}
-                          onValueChange={(value) =>
-                            setArticleForm({ ...articleForm, category: value })
-                          }
-                        >
-                          <SelectTrigger className="rounded-xl">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="general">General</SelectItem>
-                            <SelectItem value="wellness">Wellness</SelectItem>
-                            <SelectItem value="travel">Travel</SelectItem>
-                            <SelectItem value="creativity">Creativity</SelectItem>
-                            <SelectItem value="growth">Growth</SelectItem>
-                            <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+            <Button
+              onClick={() => {
+                resetArticleForm();
+                setIsArticleDialogOpen(true);
+              }}
+              className="rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Article
+            </Button>
+          </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="image_url">Image URL</Label>
-                        <Input
-                          id="image_url"
-                          value={articleForm.image_url}
-                          onChange={(e) =>
-                            setArticleForm({ ...articleForm, image_url: e.target.value })
-                          }
-                          placeholder="https://..."
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="read_time">Read Time</Label>
-                        <Input
-                          id="read_time"
-                          value={articleForm.read_time}
-                          onChange={(e) =>
-                            setArticleForm({ ...articleForm, read_time: e.target.value })
-                          }
-                          placeholder="5 min read"
-                          className="rounded-xl"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="excerpt">Excerpt</Label>
-                      <Textarea
-                        id="excerpt"
-                        value={articleForm.excerpt}
-                        onChange={(e) =>
-                          setArticleForm({ ...articleForm, excerpt: e.target.value })
-                        }
-                        placeholder="Brief summary of the article"
-                        className="rounded-xl resize-none"
-                        rows={2}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="content">Content</Label>
-                      <Textarea
-                        id="content"
-                        value={articleForm.content}
-                        onChange={(e) =>
-                          setArticleForm({ ...articleForm, content: e.target.value })
-                        }
-                        placeholder="Full article content..."
-                        className="rounded-xl resize-none"
-                        rows={6}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="flex items-center gap-3">
-                        <Switch
-                          id="published"
-                          checked={articleForm.published}
-                          onCheckedChange={(checked) =>
-                            setArticleForm({ ...articleForm, published: checked })
-                          }
-                        />
-                        <Label htmlFor="published">Published</Label>
-                      </div>
-                      <Button
-                        onClick={handleSaveArticle}
-                        disabled={savingArticle}
-                        className="rounded-xl"
-                      >
-                        {savingArticle ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : null}
-                        {editingArticle ? "Update Article" : "Create Article"}
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+          <TabsContent value="articles" className="space-y-4">
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="font-semibold">Article</TableHead>
+                    <TableHead className="font-semibold">Category</TableHead>
+                    <TableHead className="font-semibold">Author</TableHead>
+                    <TableHead className="font-semibold">Read Time</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Created</TableHead>
+                    <TableHead className="text-right font-semibold">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {articles.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        No articles yet. Create your first article!
-                      </TableCell>
-                    </TableRow>
+                    <tr>
+                      <td colSpan={7} className="text-center py-16">
+                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                          <FileText className="h-12 w-12 opacity-50" />
+                          <p className="font-medium">No articles yet</p>
+                          <p className="text-sm">Create your first article to get started</p>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     articles.map((article) => (
-                      <TableRow key={article.id}>
-                        <TableCell className="font-medium max-w-[200px] truncate">
-                          {article.title}
-                        </TableCell>
-                        <TableCell>
-                          <span className="px-2 py-1 bg-muted rounded-full text-xs capitalize">
-                            {article.category}
-                          </span>
-                        </TableCell>
-                        <TableCell>{article.author}</TableCell>
-                        <TableCell>
-                          <button
-                            onClick={() => handleTogglePublish(article)}
-                            className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-                              article.published
-                                ? "bg-accent/20 text-accent hover:bg-accent/30"
-                                : "bg-muted text-muted-foreground hover:bg-muted/80"
-                            }`}
-                          >
-                            {article.published ? "Published" : "Draft"}
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {new Date(article.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditArticle(article)}
-                              className="rounded-lg"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteArticle(article.id)}
-                              className="rounded-lg text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                      <ArticleRow
+                        key={article.id}
+                        article={article}
+                        onEdit={handleEditArticle}
+                        onDelete={handleDeleteArticle}
+                        onTogglePublish={handleTogglePublish}
+                      />
                     ))
                   )}
                 </TableBody>
@@ -554,67 +430,35 @@ const Admin = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="users" className="space-y-6">
-            <h2 className="text-xl font-semibold">Users ({users.length})</h2>
-
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+          <TabsContent value="users" className="space-y-4">
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>User ID</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="font-semibold">User</TableHead>
+                    <TableHead className="font-semibold">Role</TableHead>
+                    <TableHead className="font-semibold">Joined</TableHead>
+                    <TableHead className="text-right font-semibold">Change Role</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        No users yet.
-                      </TableCell>
-                    </TableRow>
+                    <tr>
+                      <td colSpan={4} className="text-center py-16">
+                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                          <Users className="h-12 w-12 opacity-50" />
+                          <p className="font-medium">No users yet</p>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     users.map((userRole) => (
-                      <TableRow key={userRole.id}>
-                        <TableCell className="font-mono text-sm max-w-[200px] truncate">
-                          {userRole.user_id}
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              userRole.role === "admin"
-                                ? "bg-accent/20 text-accent"
-                                : "bg-muted text-muted-foreground"
-                            }`}
-                          >
-                            {userRole.role}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {new Date(userRole.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Select
-                            value={userRole.role}
-                            onValueChange={(value: "admin" | "user") =>
-                              handleUpdateUserRole(userRole.user_id, value)
-                            }
-                            disabled={userRole.user_id === user?.id}
-                          >
-                            <SelectTrigger className="w-[100px] rounded-lg">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
+                      <UserRow
+                        key={userRole.id}
+                        userRole={userRole}
+                        currentUserId={user?.id}
+                        onUpdateRole={handleUpdateUserRole}
+                      />
                     ))
                   )}
                 </TableBody>
@@ -623,6 +467,19 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <ArticleDialog
+        open={isArticleDialogOpen}
+        onOpenChange={(open) => {
+          setIsArticleDialogOpen(open);
+          if (!open) resetArticleForm();
+        }}
+        form={articleForm}
+        onFormChange={setArticleForm}
+        onSave={handleSaveArticle}
+        saving={savingArticle}
+        isEditing={!!editingArticle}
+      />
     </div>
   );
 };
