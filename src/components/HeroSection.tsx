@@ -1,6 +1,13 @@
-import { Instagram, Facebook, Linkedin, Sparkles, Edit, Plus } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Instagram, Facebook, Linkedin, Sparkles, Edit, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 interface FeaturedArticle {
   id: string;
@@ -11,14 +18,38 @@ interface FeaturedArticle {
 }
 
 interface HeroSectionProps {
-  featuredArticle?: FeaturedArticle | null;
+  featuredArticles?: FeaturedArticle[];
   isAdmin?: boolean;
   onEditFeatured?: () => void;
 }
 
-const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionProps) => {
-  const hasFeature = featuredArticle && featuredArticle.id;
-  
+const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSectionProps) => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  const scrollPrev = useCallback(() => {
+    api?.scrollPrev();
+  }, [api]);
+
+  const scrollNext = useCallback(() => {
+    api?.scrollNext();
+  }, [api]);
+
+  const hasFeatures = featuredArticles.length > 0;
+  const currentArticle = hasFeatures ? featuredArticles[current] : null;
+
   return (
     <section className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-muted via-muted to-card my-12 animate-fade-in">
       {/* Decorative elements */}
@@ -26,16 +57,46 @@ const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionPr
       <div className="absolute bottom-20 left-10 w-24 h-24 bg-secondary/20 rounded-full blur-2xl animate-glow-pulse" style={{ animationDelay: '1s' }} />
       
       <div className="relative grid md:grid-cols-2 gap-6 md:gap-12 p-6 md:p-12 lg:p-16">
-        {/* Left side - Image */}
+        {/* Left side - Image Carousel */}
         <div className="relative aspect-[4/3] md:aspect-auto rounded-[2rem] overflow-hidden animate-scale-in group">
-          {hasFeature ? (
-            <Link to={`/article/${featuredArticle.id}`}>
-              <img
-                src={featuredArticle.image_url || "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"}
-                alt={featuredArticle.title}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-105"
-              />
-            </Link>
+          {hasFeatures ? (
+            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full h-full">
+              <CarouselContent className="h-full -ml-0">
+                {featuredArticles.map((article) => (
+                  <CarouselItem key={article.id} className="h-full pl-0">
+                    <Link to={`/article/${article.id}`} className="block w-full h-full">
+                      <img
+                        src={article.image_url || "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"}
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-105"
+                      />
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+
+              {/* Carousel Navigation */}
+              {count > 1 && (
+                <>
+                  <Button
+                    onClick={scrollPrev}
+                    size="icon"
+                    variant="ghost"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-background/60 backdrop-blur-md border border-border/50 hover:bg-background/80 text-foreground z-10"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    onClick={scrollNext}
+                    size="icon"
+                    variant="ghost"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-background/60 backdrop-blur-md border border-border/50 hover:bg-background/80 text-foreground z-10"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </Button>
+                </>
+              )}
+            </Carousel>
           ) : (
             <img
               src="https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"
@@ -43,12 +104,32 @@ const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionPr
               className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-105"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           
-          {/* Floating badge */}
-          <div className="absolute bottom-6 left-6 px-4 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center gap-2 animate-float">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm font-medium">Featured Today</span>
+          {/* Floating badge with dots */}
+          <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
+            <div className="px-4 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center gap-2 animate-float">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span className="text-sm font-medium">Featured {hasFeatures && count > 1 ? `${current + 1}/${count}` : "Today"}</span>
+            </div>
+
+            {/* Dot indicators */}
+            {count > 1 && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50">
+                {Array.from({ length: count }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => api?.scrollTo(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 pointer-events-auto ${
+                      index === current
+                        ? "bg-accent w-4"
+                        : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Admin Edit Button */}
@@ -56,12 +137,12 @@ const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionPr
             <Button
               onClick={onEditFeatured}
               size="sm"
-              className="absolute top-4 right-4 rounded-full bg-background/80 backdrop-blur-md border border-border/50 hover:bg-background text-foreground shadow-lg"
+              className="absolute top-4 right-4 rounded-full bg-background/80 backdrop-blur-md border border-border/50 hover:bg-background text-foreground shadow-lg z-20"
             >
-              {hasFeature ? (
+              {hasFeatures ? (
                 <>
                   <Edit className="w-4 h-4 mr-2" />
-                  Change Featured
+                  Edit Featured ({count})
                 </>
               ) : (
                 <>
@@ -76,20 +157,20 @@ const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionPr
         {/* Right side - Content */}
         <div className="flex flex-col justify-center space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-6">
-            {hasFeature ? (
-              <>
-                <span className="inline-block px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent bg-accent/10 rounded-full">
-                  {featuredArticle.category}
+            {currentArticle ? (
+              <div key={currentArticle.id} className="animate-fade-in">
+                <span className="inline-block px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent bg-accent/10 rounded-full mb-4">
+                  {currentArticle.category}
                 </span>
-                <Link to={`/article/${featuredArticle.id}`}>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight animate-slide-down hover:text-accent transition-colors">
-                    {featuredArticle.title}
+                <Link to={`/article/${currentArticle.id}`}>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight hover:text-accent transition-colors">
+                    {currentArticle.title}
                   </h1>
                 </Link>
-                <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl animate-slide-up stagger-1">
-                  {featuredArticle.excerpt}
+                <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl mt-4">
+                  {currentArticle.excerpt}
                 </p>
-              </>
+              </div>
             ) : (
               <>
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.05] tracking-tight animate-slide-down">
@@ -108,9 +189,9 @@ const HeroSection = ({ featuredArticle, isAdmin, onEditFeatured }: HeroSectionPr
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4 animate-slide-up stagger-2">
-            {hasFeature ? (
+            {currentArticle ? (
               <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 md:px-10 md:py-6 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/20 w-full sm:w-auto group">
-                <Link to={`/article/${featuredArticle.id}`}>
+                <Link to={`/article/${currentArticle.id}`}>
                   <span>Read Article</span>
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Link>

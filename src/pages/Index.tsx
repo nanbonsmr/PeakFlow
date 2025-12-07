@@ -22,24 +22,24 @@ interface FeaturedArticle {
 const Index = () => {
   const { user, isAdmin } = useAuth();
   const { articles, loading } = useArticles();
-  const featuredArticles = articles.slice(0, 6);
+  const displayArticles = articles.slice(0, 6);
   const [draftCount, setDraftCount] = useState(0);
-  const [featuredArticle, setFeaturedArticle] = useState<FeaturedArticle | null>(null);
+  const [featuredArticles, setFeaturedArticles] = useState<FeaturedArticle[]>([]);
   const [selectorOpen, setSelectorOpen] = useState(false);
 
-  const fetchFeaturedArticle = async () => {
+  const fetchFeaturedArticles = async () => {
     const { data } = await supabase
       .from("articles")
       .select("id, title, excerpt, image_url, category")
       .eq("featured", true)
       .eq("published", true)
-      .maybeSingle();
+      .order("updated_at", { ascending: false });
     
-    setFeaturedArticle(data as FeaturedArticle | null);
+    setFeaturedArticles((data as FeaturedArticle[]) || []);
   };
 
   useEffect(() => {
-    fetchFeaturedArticle();
+    fetchFeaturedArticles();
 
     // Subscribe to featured article changes
     const featuredChannel = supabase
@@ -48,7 +48,7 @@ const Index = () => {
         "postgres_changes",
         { event: "*", schema: "public", table: "articles" },
         () => {
-          fetchFeaturedArticle();
+          fetchFeaturedArticles();
         }
       )
       .subscribe();
@@ -95,7 +95,7 @@ const Index = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <HeroSection 
-          featuredArticle={featuredArticle}
+          featuredArticles={featuredArticles}
           isAdmin={isAdmin}
           onEditFeatured={() => setSelectorOpen(true)}
         />
@@ -104,8 +104,8 @@ const Index = () => {
         <FeaturedArticleSelector
           open={selectorOpen}
           onOpenChange={setSelectorOpen}
-          onSelect={fetchFeaturedArticle}
-          currentFeaturedId={featuredArticle?.id}
+          onSelect={fetchFeaturedArticles}
+          currentFeaturedIds={featuredArticles.map(a => a.id)}
         />
 
         {/* Intro Section */}
@@ -126,9 +126,9 @@ const Index = () => {
                 <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
               ))}
             </div>
-          ) : featuredArticles.length > 0 ? (
+          ) : displayArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredArticles.map((article, index) => (
+              {displayArticles.map((article, index) => (
                 <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
                   <ArticleCard 
                     id={article.id}
