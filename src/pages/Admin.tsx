@@ -19,14 +19,15 @@ import {
   FileText,
   Shield,
   Loader2,
-  TrendingUp,
   Eye,
   Calendar,
+  BarChart3,
 } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import ArticleRow from "@/components/admin/ArticleRow";
 import UserRow from "@/components/admin/UserRow";
 import ArticleDialog from "@/components/admin/ArticleDialog";
+import ArticleCharts from "@/components/admin/ArticleCharts";
 
 interface Article {
   id: string;
@@ -356,6 +357,9 @@ const Admin = () => {
             />
           </div>
         </div>
+
+        {/* Charts Section */}
+        <ArticleCharts articles={articles} />
 
         {/* Tabs */}
         <Tabs defaultValue="articles" className="space-y-6 animate-fade-in">
