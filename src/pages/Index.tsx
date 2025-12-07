@@ -69,6 +69,25 @@ const Index = () => {
         </section>
       </main>
 
+      {/* Floating Admin Button */}
+      {!user ? (
+        <Link
+          to="/auth"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+        >
+          <Shield className="h-4 w-4" />
+          <span>Admin Login</span>
+        </Link>
+      ) : isAdmin ? (
+        <Link
+          to="/admin"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+        >
+          <Shield className="h-4 w-4" />
+          <span>Admin Dashboard</span>
+        </Link>
+      ) : null}
+
       {/* Footer */}
       <footer className="border-t border-border mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
