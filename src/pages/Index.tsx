@@ -1,10 +1,15 @@
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import { articles } from "@/data/articles";
+import { useAuth } from "@/contexts/AuthContext";
+import { Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const { user, isAdmin } = useAuth();
   const featuredArticles = articles.slice(0, 6);
 
   return (
@@ -97,6 +102,26 @@ const Index = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="/privacy" className="hover:text-accent transition-colors">Privacy Policy</a></li>
                 <li><a href="/terms" className="hover:text-accent transition-colors">Terms of Service</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Account</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {!user ? (
+                  <li>
+                    <Link to="/auth" className="hover:text-accent transition-colors inline-flex items-center gap-1.5">
+                      <Shield className="h-3.5 w-3.5" />
+                      Admin Login
+                    </Link>
+                  </li>
+                ) : isAdmin ? (
+                  <li>
+                    <Link to="/admin" className="hover:text-accent transition-colors inline-flex items-center gap-1.5">
+                      <Shield className="h-3.5 w-3.5" />
+                      Admin Dashboard
+                    </Link>
+                  </li>
+                ) : null}
               </ul>
             </div>
           </div>
