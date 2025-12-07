@@ -4,17 +4,59 @@ import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
+import FeaturedArticleSelector from "@/components/FeaturedArticleSelector";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useArticles } from "@/hooks/useArticles";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface FeaturedArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  image_url: string;
+  category: string;
+}
+
 const Index = () => {
   const { user, isAdmin } = useAuth();
   const { articles, loading } = useArticles();
   const featuredArticles = articles.slice(0, 6);
   const [draftCount, setDraftCount] = useState(0);
+  const [featuredArticle, setFeaturedArticle] = useState<FeaturedArticle | null>(null);
+  const [selectorOpen, setSelectorOpen] = useState(false);
+
+  const fetchFeaturedArticle = async () => {
+    const { data } = await supabase
+      .from("articles")
+      .select("id, title, excerpt, image_url, category")
+      .eq("featured", true)
+      .eq("published", true)
+      .maybeSingle();
+    
+    setFeaturedArticle(data as FeaturedArticle | null);
+  };
+
+  useEffect(() => {
+    fetchFeaturedArticle();
+
+    // Subscribe to featured article changes
+    const featuredChannel = supabase
+      .channel("featured-article-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "articles" },
+        () => {
+          fetchFeaturedArticle();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(featuredChannel);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -52,7 +94,19 @@ const Index = () => {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <HeroSection />
+        <HeroSection 
+          featuredArticle={featuredArticle}
+          isAdmin={isAdmin}
+          onEditFeatured={() => setSelectorOpen(true)}
+        />
+
+        {/* Featured Article Selector Dialog */}
+        <FeaturedArticleSelector
+          open={selectorOpen}
+          onOpenChange={setSelectorOpen}
+          onSelect={fetchFeaturedArticle}
+          currentFeaturedId={featuredArticle?.id}
+        />
 
         {/* Intro Section */}
         <IntroSection />
