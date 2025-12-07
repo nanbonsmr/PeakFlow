@@ -63,7 +63,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
       
       <div className="relative grid md:grid-cols-2 gap-6 md:gap-12 p-6 md:p-12 lg:p-16">
         {/* Left side - Image Carousel */}
-        <div className="relative aspect-[4/3] md:aspect-auto rounded-[2rem] overflow-hidden animate-scale-in group">
+        <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden animate-scale-in group">
           {hasFeatures ? (
             <Carousel 
               setApi={setApi} 
