@@ -191,7 +191,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
                   </span>
                 </h1>
                 <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl animate-slide-up stagger-1">
-                  Welcome to Perspective's Blog: A Realm of Reflection, Inspiration, and Discovery. Where Words Illuminate
+                  Welcome to PeakFlow's Blog: A Realm of Reflection, Inspiration, and Discovery. Where Words Illuminate
                   Paths of Meaning.
                 </p>
               </>

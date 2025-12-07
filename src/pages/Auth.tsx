@@ -104,9 +104,9 @@ const Auth = () => {
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-2">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">P</span>
+              <span className="text-primary-foreground font-bold text-xl">PF</span>
             </div>
-            <span className="text-2xl font-bold font-serif">Perspective</span>
+            <span className="text-2xl font-bold font-serif">PeakFlow</span>
           </a>
         </div>
 
