@@ -1,11 +1,10 @@
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/data/articles";
+import { useArticles } from "@/hooks/useArticles";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Creativity = () => {
-  const creativityArticles = articles.filter(article => 
-    article.category.toLowerCase() === "creativity"
-  );
+  const { articles: creativityArticles, loading } = useArticles("creativity");
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
@@ -25,13 +24,32 @@ const Creativity = () => {
 
         {/* Articles Grid */}
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {creativityArticles.map((article, index) => (
-              <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
-                <ArticleCard {...article} />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
+              ))}
+            </div>
+          ) : creativityArticles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {creativityArticles.map((article, index) => (
+                <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
+                  <ArticleCard 
+                    id={article.id}
+                    title={article.title}
+                    category={article.category}
+                    date={article.date}
+                    image={article.image}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 text-muted-foreground">
+              <p className="text-lg">No creativity articles published yet.</p>
+              <p className="text-sm mt-2">Check back soon for new content!</p>
+            </div>
+          )}
         </section>
 
         {/* About Creativity */}
