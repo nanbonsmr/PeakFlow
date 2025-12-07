@@ -67,18 +67,22 @@ const Header = () => {
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <button
               onClick={toggleTheme}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-muted/60 transition-all"
+              className="relative p-2 sm:p-2.5 rounded-full hover:bg-muted/60 transition-all duration-300 group overflow-hidden"
               aria-label="Toggle theme"
             >
-              {isDark ? (
-                <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
-              ) : (
-                <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
-              )}
+              <div className="relative transition-transform duration-500 ease-out group-hover:rotate-12">
+                {isDark ? (
+                  <Sun className="h-4 w-4 sm:h-5 sm:w-5 transition-all duration-300" />
+                ) : (
+                  <Moon className="h-4 w-4 sm:h-5 sm:w-5 transition-all duration-300" />
+                )}
+              </div>
+              <span className="absolute inset-0 rounded-full bg-accent/10 scale-0 group-hover:scale-100 transition-transform duration-300" />
             </button>
             
-            <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 transition-all">
-              Join Now
+            <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group">
+              <span>Join Now</span>
+              <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
             </Button>
 
             {/* Mobile Menu Button */}
