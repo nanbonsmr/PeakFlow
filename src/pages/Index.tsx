@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
@@ -7,11 +8,25 @@ import { articles } from "@/data/articles";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
   const featuredArticles = articles.slice(0, 6);
+  const [draftCount, setDraftCount] = useState(0);
 
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchDraftCount = async () => {
+        const { count } = await supabase
+          .from("articles")
+          .select("*", { count: "exact", head: true })
+          .eq("published", false);
+        setDraftCount(count || 0);
+      };
+      fetchDraftCount();
+    }
+  }, [isAdmin]);
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <Header />
@@ -85,6 +100,11 @@ const Index = () => {
         >
           <Shield className="h-4 w-4" />
           <span>Admin Dashboard</span>
+          {draftCount > 0 && (
+            <span className="absolute -top-2 -right-2 flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-destructive text-destructive-foreground text-xs font-bold animate-pulse">
+              {draftCount}
+            </span>
+          )}
         </Link>
       ) : null}
 
