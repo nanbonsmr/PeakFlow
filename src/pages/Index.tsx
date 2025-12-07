@@ -16,16 +16,33 @@ const Index = () => {
   const [draftCount, setDraftCount] = useState(0);
 
   useEffect(() => {
-    if (isAdmin) {
-      const fetchDraftCount = async () => {
-        const { count } = await supabase
-          .from("articles")
-          .select("*", { count: "exact", head: true })
-          .eq("published", false);
-        setDraftCount(count || 0);
-      };
-      fetchDraftCount();
-    }
+    if (!isAdmin) return;
+
+    const fetchDraftCount = async () => {
+      const { count } = await supabase
+        .from("articles")
+        .select("*", { count: "exact", head: true })
+        .eq("published", false);
+      setDraftCount(count || 0);
+    };
+
+    fetchDraftCount();
+
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel("articles-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "articles" },
+        () => {
+          fetchDraftCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [isAdmin]);
   return (
     <div className="min-h-screen bg-background animate-fade-in">
