@@ -9,6 +9,7 @@ import DashboardSidebar from "@/components/admin/DashboardSidebar";
 import DashboardTopBar from "@/components/admin/DashboardTopBar";
 import StatCard from "@/components/admin/StatCard";
 import ArticleCharts from "@/components/admin/ArticleCharts";
+import SwipeIndicator from "@/components/admin/SwipeIndicator";
 import {
   FileText,
   Eye,
@@ -166,7 +167,10 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-dashboard-bg flex">
-      <DashboardSidebar 
+      {/* Mobile swipe indicator */}
+      <SwipeIndicator visible={isMobile && !mobileMenuOpen} />
+
+      <DashboardSidebar
         collapsed={sidebarCollapsed}
         setCollapsed={setSidebarCollapsed}
         mobileOpen={mobileMenuOpen}
