@@ -21,11 +21,12 @@ import {
   Loader2,
   Eye,
   Calendar,
-  BarChart3,
+  Mail,
 } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import ArticleRow from "@/components/admin/ArticleRow";
 import UserRow from "@/components/admin/UserRow";
+import SubscriberRow from "@/components/admin/SubscriberRow";
 import ArticleDialog from "@/components/admin/ArticleDialog";
 import ArticleCharts from "@/components/admin/ArticleCharts";
 
@@ -50,6 +51,13 @@ interface UserRole {
   created_at: string;
 }
 
+interface Subscriber {
+  id: string;
+  email: string;
+  subscribed_at: string;
+  is_active: boolean;
+}
+
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
@@ -57,6 +65,7 @@ const Admin = () => {
 
   const [articles, setArticles] = useState<Article[]>([]);
   const [users, setUsers] = useState<UserRole[]>([]);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [isArticleDialogOpen, setIsArticleDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
@@ -90,6 +99,7 @@ const Admin = () => {
     if (isAdmin) {
       fetchArticles();
       fetchUsers();
+      fetchSubscribers();
     }
   }, [isAdmin]);
 
@@ -125,6 +135,58 @@ const Admin = () => {
       });
     } else {
       setUsers(data || []);
+    }
+  };
+
+  const fetchSubscribers = async () => {
+    const { data, error } = await supabase
+      .from("newsletter_subscribers")
+      .select("*")
+      .order("subscribed_at", { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error fetching subscribers",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      setSubscribers(data || []);
+    }
+  };
+
+  const handleToggleSubscriberActive = async (subscriber: Subscriber) => {
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .update({ is_active: !subscriber.is_active })
+      .eq("id", subscriber.id);
+
+    if (error) {
+      toast({
+        title: "Error updating subscriber",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      fetchSubscribers();
+    }
+  };
+
+  const handleDeleteSubscriber = async (id: string) => {
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Error deleting subscriber",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "Subscriber removed successfully" });
+      fetchSubscribers();
     }
   };
 
@@ -272,6 +334,7 @@ const Admin = () => {
   const publishedArticles = articles.filter((a) => a.published).length;
   const draftArticles = articles.filter((a) => !a.published).length;
   const adminUsers = users.filter((u) => u.role === "admin").length;
+  const activeSubscribers = subscribers.filter((s) => s.is_active).length;
   const thisMonthArticles = articles.filter((a) => {
     const articleDate = new Date(a.created_at);
     const now = new Date();
@@ -350,10 +413,10 @@ const Admin = () => {
           </div>
           <div className="animate-slide-up stagger-4">
             <StatCard
-              title="Total Users"
-              value={users.length}
-              subtitle={`${adminUsers} admins`}
-              icon={Users}
+              title="Subscribers"
+              value={subscribers.length}
+              subtitle={`${activeSubscribers} active`}
+              icon={Mail}
             />
           </div>
         </div>
@@ -378,6 +441,13 @@ const Admin = () => {
               >
                 <Users className="h-4 w-4 mr-2" />
                 Users
+              </TabsTrigger>
+              <TabsTrigger
+                value="subscribers"
+                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Subscribers
               </TabsTrigger>
             </TabsList>
 
@@ -462,6 +532,43 @@ const Admin = () => {
                         userRole={userRole}
                         currentUserId={user?.id}
                         onUpdateRole={handleUpdateUserRole}
+                      />
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="subscribers" className="space-y-4">
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="font-semibold">Email</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Subscribed</TableHead>
+                    <TableHead className="text-right font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {subscribers.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="text-center py-16">
+                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                          <Mail className="h-12 w-12 opacity-50" />
+                          <p className="font-medium">No subscribers yet</p>
+                          <p className="text-sm">Subscribers will appear here when they sign up</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    subscribers.map((subscriber) => (
+                      <SubscriberRow
+                        key={subscriber.id}
+                        subscriber={subscriber}
+                        onToggleActive={handleToggleSubscriberActive}
+                        onDelete={handleDeleteSubscriber}
                       />
                     ))
                   )}
