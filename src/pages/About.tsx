@@ -14,53 +14,55 @@ const About = () => {
             About PeakFlow
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-slide-up stagger-1">
-            A space for exploring ideas, finding inspiration, and discovering new ways of seeing the world.
+            A personal blog dedicated to helping you optimize your life through productivity tips, lifestyle insights, and the latest in tech.
           </p>
         </div>
 
         {/* Story Section */}
         <section className="mb-16 space-y-6 text-muted-foreground animate-slide-up stagger-2">
-          <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-6">The Story Behind PeakFlow</h2>
           <p>
-            PeakFlow began with a simple question: What if we could create a space where thoughtful ideas, 
-            meaningful stories, and practical wisdom come together to enrich our daily lives?
+            PeakFlow started as a personal journey to document what actually works when it comes to being more 
+            productive, living intentionally, and leveraging technology to simplify life. After years of 
+            experimenting with different systems, tools, and habits, I wanted to share the insights that made 
+            a real difference.
           </p>
           <p>
-            In a world saturated with information, we felt the need for something different—a publication that 
-            prioritizes depth over speed, quality over quantity, and authentic connection over viral content. 
-            PeakFlow is our answer to that need.
+            In a world overflowing with productivity advice and tech recommendations, I focus on what's 
+            practical and actionable. No fluff, no complicated systems—just real strategies that fit into 
+            everyday life. Whether you're looking to streamline your workflow, discover useful apps, or 
+            build better habits, you'll find content designed to help you thrive.
           </p>
           <p>
-            We explore topics that matter: wellness practices that actually work, travel experiences that transform 
-            us, creative pursuits that bring joy, and personal growth strategies that lead to lasting change. 
-            Our approach is grounded in curiosity, backed by research, and enriched by lived experience.
+            This blog covers productivity frameworks that actually stick, lifestyle choices that boost 
+            well-being, and tech tips that save time and energy. My goal is to help you work smarter, 
+            live better, and make technology work for you—not the other way around.
           </p>
         </section>
 
-        {/* Mission Section */}
+        {/* Topics Section */}
         <section className="mb-16 rounded-2xl bg-card p-8 md:p-12">
-          <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
+          <h2 className="text-3xl font-bold mb-6">What I Write About</h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
-              We believe that how we see the world shapes how we experience it. PeakFlow is dedicated to 
-              offering fresh viewpoints, practical insights, and inspiring stories that help readers:
+              PeakFlow covers the intersection of productivity, lifestyle, and technology. Here's what you can expect:
             </p>
             <ul className="space-y-3 ml-6">
               <li className="flex items-start">
                 <span className="mr-3 mt-1">•</span>
-                <span>Cultivate mindful, balanced lifestyles that prioritize wellbeing</span>
+                <span><strong>Productivity:</strong> Time management techniques, focus strategies, goal-setting frameworks, and workflow optimization</span>
               </li>
               <li className="flex items-start">
                 <span className="mr-3 mt-1">•</span>
-                <span>Explore the world with curiosity and respect</span>
+                <span><strong>Lifestyle:</strong> Habit building, work-life balance, mindfulness practices, and intentional living</span>
               </li>
               <li className="flex items-start">
                 <span className="mr-3 mt-1">•</span>
-                <span>Express themselves authentically through creative pursuits</span>
+                <span><strong>Tech Tips:</strong> App reviews, software tutorials, automation guides, and digital tools to boost efficiency</span>
               </li>
               <li className="flex items-start">
                 <span className="mr-3 mt-1">•</span>
-                <span>Embrace personal growth as a lifelong journey</span>
+                <span><strong>Personal Growth:</strong> Learning strategies, skill development, and self-improvement insights</span>
               </li>
             </ul>
           </div>
@@ -68,30 +70,30 @@ const About = () => {
 
         {/* Values Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8">Our Values</h2>
+          <h2 className="text-3xl font-bold mb-8">My Approach</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 rounded-xl bg-muted">
-              <h3 className="text-xl font-semibold mb-3">Authenticity</h3>
+              <h3 className="text-xl font-semibold mb-3">Practical First</h3>
               <p className="text-muted-foreground">
-                We share real experiences, honest reflections, and genuine insights—not curated perfection.
+                Every tip and strategy I share has been tested in real life. If it doesn't work practically, it doesn't make it to the blog.
               </p>
             </div>
             <div className="p-6 rounded-xl bg-muted">
-              <h3 className="text-xl font-semibold mb-3">Thoughtfulness</h3>
+              <h3 className="text-xl font-semibold mb-3">No Gatekeeping</h3>
               <p className="text-muted-foreground">
-                Every article is carefully researched, thoughtfully written, and designed to add real value.
+                Knowledge should be accessible. I share everything I learn—the wins, the failures, and the lessons in between.
               </p>
             </div>
             <div className="p-6 rounded-xl bg-muted">
-              <h3 className="text-xl font-semibold mb-3">Inclusivity</h3>
+              <h3 className="text-xl font-semibold mb-3">Simplicity Over Complexity</h3>
               <p className="text-muted-foreground">
-                We welcome diverse perspectives and believe everyone's journey deserves respect and representation.
+                The best systems are simple. I focus on sustainable approaches that don't require constant maintenance.
               </p>
             </div>
             <div className="p-6 rounded-xl bg-muted">
-              <h3 className="text-xl font-semibold mb-3">Sustainability</h3>
+              <h3 className="text-xl font-semibold mb-3">Continuous Learning</h3>
               <p className="text-muted-foreground">
-                We promote practices that are sustainable for individuals, communities, and the planet.
+                Technology and best practices evolve. I stay curious and update my recommendations as I discover better solutions.
               </p>
             </div>
           </div>
@@ -99,13 +101,13 @@ const About = () => {
 
         {/* CTA Section */}
         <section className="text-center py-12 rounded-2xl bg-card">
-          <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
+          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Subscribe to receive our latest articles, insights, and inspiration directly in your inbox.
+            Get the latest productivity tips, tech recommendations, and lifestyle insights delivered straight to your inbox.
           </p>
           <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8">
             <Mail className="mr-2 h-4 w-4" />
-            Subscribe Now
+            Subscribe to Newsletter
           </Button>
         </section>
       </main>
