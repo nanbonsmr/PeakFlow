@@ -22,6 +22,7 @@ import {
   Eye,
   Calendar,
   Mail,
+  Download,
 } from "lucide-react";
 import StatCard from "@/components/admin/StatCard";
 import ArticleRow from "@/components/admin/ArticleRow";
@@ -188,6 +189,41 @@ const Admin = () => {
       toast({ title: "Subscriber removed successfully" });
       fetchSubscribers();
     }
+  };
+
+  const handleExportSubscribers = () => {
+    if (subscribers.length === 0) {
+      toast({
+        title: "No subscribers",
+        description: "There are no subscribers to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const headers = ["Email", "Status", "Subscribed At"];
+    const csvContent = [
+      headers.join(","),
+      ...subscribers.map((s) => 
+        [
+          s.email,
+          s.is_active ? "Active" : "Inactive",
+          new Date(s.subscribed_at).toISOString()
+        ].join(",")
+      )
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `newsletter-subscribers-${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({ title: "Subscribers exported successfully" });
   };
 
   const resetArticleForm = () => {
@@ -541,6 +577,17 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="subscribers" className="space-y-4">
+            <div className="flex justify-end mb-4">
+              <Button
+                onClick={handleExportSubscribers}
+                variant="outline"
+                className="rounded-xl"
+                disabled={subscribers.length === 0}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
+            </div>
             <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
