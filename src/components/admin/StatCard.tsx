@@ -10,53 +10,67 @@ interface StatCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: "default" | "accent" | "muted";
+  variant?: "default" | "accent" | "success" | "warning" | "info";
+  iconColor?: string;
 }
 
-const StatCard = ({ title, value, subtitle, icon: Icon, trend, variant = "default" }: StatCardProps) => {
-  const variants = {
-    default: "bg-card border-border/50",
-    accent: "bg-accent/10 border-accent/20",
-    muted: "bg-muted/50 border-border/30",
+const StatCard = ({ 
+  title, 
+  value, 
+  subtitle, 
+  icon: Icon, 
+  trend, 
+  variant = "default",
+  iconColor 
+}: StatCardProps) => {
+  const iconBgVariants = {
+    default: "bg-dashboard-bg",
+    accent: "bg-gradient-to-br from-dashboard-accent to-purple-500",
+    success: "bg-gradient-to-br from-dashboard-success to-emerald-400",
+    warning: "bg-gradient-to-br from-dashboard-warning to-orange-400",
+    info: "bg-gradient-to-br from-dashboard-info to-sky-400",
+  };
+
+  const iconTextVariants = {
+    default: "text-muted-foreground",
+    accent: "text-white",
+    success: "text-white",
+    warning: "text-white",
+    info: "text-white",
   };
 
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]",
-        variants[variant]
-      )}
-    >
+    <div className="relative overflow-hidden bg-dashboard-card rounded-2xl border border-dashboard-border p-6 transition-all duration-300 hover:shadow-soft-lg hover:border-dashboard-accent/20 group">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-3xl font-bold font-serif tracking-tight">{value}</p>
+          <p className="text-3xl font-bold tracking-tight">{value}</p>
           {subtitle && (
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
           {trend && (
-            <div className="flex items-center gap-1 mt-2">
+            <div className="flex items-center gap-2 mt-2">
               <span
                 className={cn(
-                  "text-xs font-medium px-2 py-0.5 rounded-full",
+                  "text-xs font-semibold px-2 py-1 rounded-lg",
                   trend.isPositive
-                    ? "bg-accent/20 text-accent"
-                    : "bg-destructive/20 text-destructive"
+                    ? "bg-dashboard-success/15 text-dashboard-success"
+                    : "bg-destructive/15 text-destructive"
                 )}
               >
-                {trend.isPositive ? "+" : "-"}{Math.abs(trend.value)}%
+                {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
               </span>
               <span className="text-xs text-muted-foreground">vs last month</span>
             </div>
           )}
         </div>
-        <div className="p-3 rounded-xl bg-background/80">
-          <Icon className="h-6 w-6 text-muted-foreground" />
+        <div className={cn(
+          "p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110",
+          iconBgVariants[variant]
+        )}>
+          <Icon className={cn("h-6 w-6", iconTextVariants[variant], iconColor)} />
         </div>
       </div>
-      
-      {/* Decorative gradient */}
-      <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br from-accent/10 to-transparent blur-2xl" />
     </div>
   );
 };

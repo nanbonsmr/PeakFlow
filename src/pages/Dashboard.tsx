@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import DashboardSidebar from "@/components/admin/DashboardSidebar";
+import DashboardTopBar from "@/components/admin/DashboardTopBar";
 import StatCard from "@/components/admin/StatCard";
 import ArticleCharts from "@/components/admin/ArticleCharts";
 import {
@@ -16,9 +17,12 @@ import {
   Clock,
   Loader2,
   ArrowUpRight,
+  PenLine,
+  UserPlus,
+  Megaphone,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 interface Article {
   id: string;
@@ -117,10 +121,14 @@ const Dashboard = () => {
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-dashboard-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-muted-foreground">Loading dashboard...</p>
+          <div className="relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-dashboard-accent to-purple-500 flex items-center justify-center shadow-glow">
+              <Loader2 className="h-7 w-7 animate-spin text-white" />
+            </div>
+          </div>
+          <p className="text-muted-foreground font-medium">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -131,209 +139,230 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-dashboard-bg flex">
       <DashboardSidebar />
 
-      <main className="flex-1 ml-20 lg:ml-64 transition-all duration-300">
-        <div className="p-6 lg:p-8 max-w-7xl">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold font-serif tracking-tight">
-                  Welcome back! 👋
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Here's what's happening with your blog today.
-                </p>
-              </div>
-              <Link to="/admin">
-                <Button className="rounded-xl shadow-lg hover:shadow-xl transition-all">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Manage Content
-                </Button>
-              </Link>
-            </div>
-          </div>
+      <div className="flex-1 ml-20 lg:ml-64 transition-all duration-300 flex flex-col">
+        <DashboardTopBar />
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <div className="animate-slide-up stagger-1">
-              <StatCard
-                title="Total Articles"
-                value={articles.length}
-                subtitle={`${publishedArticles} published, ${draftArticles} drafts`}
-                icon={FileText}
-                variant="default"
-              />
-            </div>
-            <div className="animate-slide-up stagger-2">
-              <StatCard
-                title="Published"
-                value={publishedArticles}
-                subtitle="Live on site"
-                icon={Eye}
-                variant="accent"
-              />
-            </div>
-            <div className="animate-slide-up stagger-3">
-              <StatCard
-                title="This Month"
-                value={thisMonthArticles}
-                subtitle="New articles"
-                icon={Calendar}
-                trend={{ value: Math.abs(growthRate), isPositive: growthRate >= 0 }}
-              />
-            </div>
-            <div className="animate-slide-up stagger-4">
-              <StatCard
-                title="Subscribers"
-                value={subscribers.length}
-                subtitle={`${activeSubscribers} active`}
-                icon={Mail}
-              />
-            </div>
-          </div>
-
-          {/* Charts Section */}
-          <div className="mb-8">
-            <ArticleCharts articles={articles} />
-          </div>
-
-          {/* Quick Actions & Recent Articles */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Quick Actions */}
-            <div className="bg-card rounded-2xl border border-border/50 p-6">
-              <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <Link
-                  to="/admin"
-                  className="flex items-center justify-between p-3 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-primary" />
-                    </div>
-                    <span className="font-medium">Create Article</span>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </Link>
-                <Link
-                  to="/admin?tab=users"
-                  className="flex items-center justify-between p-3 rounded-xl bg-accent/5 hover:bg-accent/10 transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-accent" />
-                    </div>
-                    <span className="font-medium">Manage Users</span>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
-                </Link>
-                <Link
-                  to="/admin?tab=subscribers"
-                  className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                      <Mail className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <span className="font-medium">View Subscribers</span>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+        <main className="flex-1 p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Welcome Header */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold tracking-tight flex items-center gap-2">
+                    Welcome back
+                    <span className="inline-block animate-float">👋</span>
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Here's what's happening with your blog today.
+                  </p>
+                </div>
+                <Link to="/admin">
+                  <Button className="rounded-xl bg-dashboard-accent hover:bg-dashboard-accent/90 shadow-lg shadow-dashboard-accent/25 transition-all hover:shadow-xl hover:shadow-dashboard-accent/30 gap-2">
+                    <PenLine className="h-4 w-4" />
+                    New Article
+                  </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Recent Articles */}
-            <div className="lg:col-span-2 bg-card rounded-2xl border border-border/50 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Recent Articles</h3>
-                <Link
-                  to="/admin"
-                  className="text-sm text-primary hover:underline"
-                >
-                  View all
-                </Link>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div className="animate-slide-up stagger-1">
+                <StatCard
+                  title="Total Articles"
+                  value={articles.length}
+                  subtitle={`${publishedArticles} published, ${draftArticles} drafts`}
+                  icon={FileText}
+                  variant="accent"
+                />
               </div>
-              <div className="space-y-3">
-                {recentArticles.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                    <p>No articles yet</p>
-                  </div>
-                ) : (
-                  recentArticles.map((article) => (
-                    <div
-                      key={article.id}
-                      className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium truncate">{article.title}</h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-muted-foreground capitalize">
-                            {article.category}
-                          </span>
-                          <span className="text-xs text-muted-foreground">•</span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(article.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
+              <div className="animate-slide-up stagger-2">
+                <StatCard
+                  title="Published"
+                  value={publishedArticles}
+                  subtitle="Live on your site"
+                  icon={Eye}
+                  variant="success"
+                />
+              </div>
+              <div className="animate-slide-up stagger-3">
+                <StatCard
+                  title="This Month"
+                  value={thisMonthArticles}
+                  subtitle="New articles created"
+                  icon={Calendar}
+                  trend={{ value: Math.abs(growthRate), isPositive: growthRate >= 0 }}
+                  variant="warning"
+                />
+              </div>
+              <div className="animate-slide-up stagger-4">
+                <StatCard
+                  title="Subscribers"
+                  value={subscribers.length}
+                  subtitle={`${activeSubscribers} active subscribers`}
+                  icon={Mail}
+                  variant="info"
+                />
+              </div>
+            </div>
+
+            {/* Charts Section */}
+            <div className="mb-8">
+              <ArticleCharts articles={articles} />
+            </div>
+
+            {/* Quick Actions & Recent Articles */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Quick Actions */}
+              <div className="bg-dashboard-card rounded-2xl border border-dashboard-border p-6">
+                <h3 className="font-semibold text-lg mb-5 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-dashboard-accent" />
+                  Quick Actions
+                </h3>
+                <div className="space-y-3">
+                  <Link
+                    to="/admin"
+                    className="flex items-center justify-between p-4 rounded-xl bg-dashboard-accent/5 hover:bg-dashboard-accent/10 border border-transparent hover:border-dashboard-accent/20 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-dashboard-accent/15 flex items-center justify-center">
+                        <PenLine className="h-5 w-5 text-dashboard-accent" />
                       </div>
-                      <span
-                        className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                          article.published
-                            ? "bg-accent/20 text-accent"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {article.published ? "Published" : "Draft"}
-                      </span>
+                      <span className="font-medium">Create Article</span>
                     </div>
-                  ))
-                )}
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-dashboard-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  </Link>
+                  <Link
+                    to="/admin?tab=users"
+                    className="flex items-center justify-between p-4 rounded-xl bg-dashboard-success/5 hover:bg-dashboard-success/10 border border-transparent hover:border-dashboard-success/20 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-dashboard-success/15 flex items-center justify-center">
+                        <UserPlus className="h-5 w-5 text-dashboard-success" />
+                      </div>
+                      <span className="font-medium">Manage Users</span>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-dashboard-success group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  </Link>
+                  <Link
+                    to="/admin?tab=subscribers"
+                    className="flex items-center justify-between p-4 rounded-xl bg-dashboard-warning/5 hover:bg-dashboard-warning/10 border border-transparent hover:border-dashboard-warning/20 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-dashboard-warning/15 flex items-center justify-center">
+                        <Megaphone className="h-5 w-5 text-dashboard-warning" />
+                      </div>
+                      <span className="font-medium">View Subscribers</span>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-dashboard-warning group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Overview Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-5 border border-primary/20">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-primary" />
+              {/* Recent Articles */}
+              <div className="lg:col-span-2 bg-dashboard-card rounded-2xl border border-dashboard-border p-6">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-dashboard-info" />
+                    Recent Articles
+                  </h3>
+                  <Link
+                    to="/admin"
+                    className="text-sm text-dashboard-accent hover:underline font-medium"
+                  >
+                    View all →
+                  </Link>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{users.length}</p>
-                  <p className="text-sm text-muted-foreground">Total Users</p>
+                <div className="space-y-3">
+                  {recentArticles.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <div className="h-14 w-14 rounded-2xl bg-dashboard-bg flex items-center justify-center mx-auto mb-3">
+                        <FileText className="h-7 w-7 opacity-50" />
+                      </div>
+                      <p className="font-medium">No articles yet</p>
+                      <p className="text-sm mt-1">Create your first article to get started</p>
+                    </div>
+                  ) : (
+                    recentArticles.map((article, index) => (
+                      <div
+                        key={article.id}
+                        className="flex items-center justify-between p-4 rounded-xl hover:bg-dashboard-bg transition-all group"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium truncate group-hover:text-dashboard-accent transition-colors">
+                            {article.title}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <span className="text-xs text-muted-foreground capitalize bg-dashboard-bg px-2 py-0.5 rounded-md">
+                              {article.category}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(article.created_at).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-xs px-3 py-1.5 rounded-lg font-semibold ${
+                            article.published
+                              ? "bg-dashboard-success/15 text-dashboard-success"
+                              : "bg-dashboard-bg text-muted-foreground"
+                          }`}
+                        >
+                          {article.published ? "Published" : "Draft"}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-5 border border-accent/20">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{adminUsers}</p>
-                  <p className="text-sm text-muted-foreground">Admin Users</p>
+
+            {/* Overview Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-6">
+              <div className="bg-gradient-to-br from-dashboard-accent/10 via-purple-500/5 to-transparent rounded-2xl p-6 border border-dashboard-accent/20">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-dashboard-accent to-purple-500 flex items-center justify-center shadow-lg shadow-dashboard-accent/25">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{users.length}</p>
+                    <p className="text-sm text-muted-foreground font-medium">Total Users</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl p-5 border border-border/50">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-muted-foreground" />
+              <div className="bg-gradient-to-br from-dashboard-success/10 via-emerald-500/5 to-transparent rounded-2xl p-6 border border-dashboard-success/20">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-dashboard-success to-emerald-400 flex items-center justify-center shadow-lg shadow-dashboard-success/25">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{adminUsers}</p>
+                    <p className="text-sm text-muted-foreground font-medium">Admin Users</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">{draftArticles}</p>
-                  <p className="text-sm text-muted-foreground">Pending Drafts</p>
+              </div>
+              <div className="bg-gradient-to-br from-dashboard-warning/10 via-orange-500/5 to-transparent rounded-2xl p-6 border border-dashboard-warning/20">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-dashboard-warning to-orange-400 flex items-center justify-center shadow-lg shadow-dashboard-warning/25">
+                    <Clock className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{draftArticles}</p>
+                    <p className="text-sm text-muted-foreground font-medium">Pending Drafts</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
