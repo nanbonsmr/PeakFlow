@@ -5,6 +5,7 @@ import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import FeaturedArticleSelector from "@/components/FeaturedArticleSelector";
+import NewsletterSection from "@/components/NewsletterSection";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -150,31 +151,7 @@ const Index = () => {
         </section>
 
         {/* Newsletter Section */}
-        <section className="relative my-20 rounded-[2.5rem] bg-gradient-to-br from-card via-card to-muted p-12 md:p-16 text-center animate-scale-in overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/10 rounded-full blur-2xl" />
-          
-          <div className="relative max-w-2xl mx-auto space-y-8">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Stay inspired.</h2>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              Subscribe to receive our latest articles and insights directly in your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 px-6 py-4 rounded-full border border-input bg-background/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all placeholder:text-muted-foreground/60"
-              />
-              <button className="px-10 py-4 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group">
-                <span className="flex items-center justify-center gap-2">
-                  Subscribe
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </span>
-              </button>
-            </div>
-          </div>
-        </section>
+        <NewsletterSection />
       </main>
 
       {/* Floating Admin Button */}
