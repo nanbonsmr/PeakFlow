@@ -63,6 +63,7 @@ const Dashboard = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useIsMobile();
 
   // Swipe gestures for mobile sidebar
@@ -144,7 +145,18 @@ const Dashboard = () => {
     ? Math.round(((thisMonthArticles - lastMonthArticles) / lastMonthArticles) * 100)
     : thisMonthArticles > 0 ? 100 : 0;
 
-  const recentArticles = articles.slice(0, 5);
+  // Filter articles based on search query
+  const filteredArticles = articles.filter((article) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      article.title.toLowerCase().includes(query) ||
+      article.category.toLowerCase().includes(query) ||
+      article.author.toLowerCase().includes(query)
+    );
+  });
+
+  const recentArticles = filteredArticles.slice(0, 5);
 
   if (loading || loadingData) {
     return (
@@ -182,7 +194,7 @@ const Dashboard = () => {
         "lg:ml-64",
         sidebarCollapsed && "lg:ml-20"
       )}>
-        <DashboardTopBar onMenuClick={() => setMobileMenuOpen(true)} />
+        <DashboardTopBar onMenuClick={() => setMobileMenuOpen(true)} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto">
