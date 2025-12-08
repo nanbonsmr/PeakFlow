@@ -17,7 +17,6 @@ import StyleGuide from "./pages/StyleGuide";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
-import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Manage from "./pages/Manage";
 import Search from "./pages/Search";
@@ -46,7 +45,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/manage" element={<Manage />} />
             <Route path="/search" element={<Search />} />
