@@ -17,8 +17,8 @@ const Growth = () => {
             Personal Growth
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            Embark on a journey of self-discovery and continuous improvement. 
-            Explore insights, practices, and perspectives that support your evolution into your best self.
+            Unlock your potential through continuous learning and self-improvement. 
+            Explore strategies for developing new skills, building better habits, and becoming the best version of yourself.
           </p>
         </div>
 
@@ -55,18 +55,17 @@ const Growth = () => {
         {/* Growth Philosophy */}
         <section className="mt-16 rounded-2xl bg-card p-8 md:p-12">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6">The Path of Growth</h2>
+            <h2 className="text-3xl font-bold mb-6">The Path of Continuous Improvement</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Personal growth isn't about perfection—it's about progress, self-awareness, and the courage to evolve. 
-                It's the daily practice of becoming more aligned with our values, more compassionate toward ourselves 
-                and others, and more intentional in how we live.
+                Personal growth is a lifelong journey, not a destination. The compound effect of small, 
+                consistent improvements leads to remarkable transformations over time.
               </p>
               <p>
-                Through thoughtful reflection, practical strategies, and inspiring stories, we explore what it means 
-                to grow as individuals. From building resilience to letting go of what no longer serves us, 
-                every step on this journey matters. Join us as we navigate the beautiful, challenging work of 
-                becoming who we're meant to be.
+                We share learning strategies that accelerate skill acquisition, mindset frameworks that 
+                help you overcome limiting beliefs, and practical advice for building resilience. Whether 
+                you're learning a new skill, changing careers, or simply striving to be better, these 
+                insights will guide your path forward.
               </p>
             </div>
           </div>

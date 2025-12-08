@@ -184,15 +184,15 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
             ) : (
               <div className="space-y-4">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight animate-slide-down">
-                  Journey Through{" "}
+                  Level Up Your{" "}
                   <span className="relative inline-block text-accent">
-                    Life's Spectrum
+                    Productivity
                     <span className="absolute -bottom-1 left-0 right-0 h-2 bg-accent/20 -skew-x-3 -z-10 rounded" />
                   </span>
                 </h1>
                 <p className="text-muted-foreground text-base md:text-lg leading-relaxed animate-slide-up stagger-1 line-clamp-3">
-                  Welcome to PeakFlow's Blog: A Realm of Reflection, Inspiration, and Discovery. Where Words Illuminate
-                  Paths of Meaning.
+                  Your go-to resource for productivity tips, lifestyle optimization, and tech insights 
+                  that help you work smarter and live better.
                 </p>
               </div>
             )}
@@ -208,7 +208,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
               </Button>
             ) : (
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-5 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25 w-full sm:w-auto group">
-                <span>Join Now</span>
+                <span>Start Reading</span>
                 <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
               </Button>
             )}

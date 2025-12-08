@@ -115,7 +115,7 @@ const Index = () => {
         {/* Featured Articles Grid */}
         <section id="articles" className="py-12">
           <div className="flex items-center justify-between mb-12 animate-slide-up">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Featured Articles</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Latest Articles</h2>
             <a href="#all" className="text-sm font-medium text-muted-foreground hover:text-accent transition-colors px-4 py-2 rounded-full hover:bg-muted/60">
               View all →
             </a>
@@ -183,19 +183,18 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="font-semibold mb-4">Explore</h3>
+              <h3 className="font-semibold mb-4">Categories</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/wellness" className="hover:text-accent transition-colors">Wellness</a></li>
-                <li><a href="/travel" className="hover:text-accent transition-colors">Travel</a></li>
-                <li><a href="/creativity" className="hover:text-accent transition-colors">Creativity</a></li>
-                <li><a href="/growth" className="hover:text-accent transition-colors">Growth</a></li>
+                <li><a href="/productivity" className="hover:text-accent transition-colors">Productivity</a></li>
+                <li><a href="/lifestyle" className="hover:text-accent transition-colors">Lifestyle</a></li>
+                <li><a href="/tech-tips" className="hover:text-accent transition-colors">Tech Tips</a></li>
+                <li><a href="/growth" className="hover:text-accent transition-colors">Personal Growth</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">About</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/about" className="hover:text-accent transition-colors">Our Story</a></li>
-                <li><a href="/authors" className="hover:text-accent transition-colors">Authors</a></li>
+                <li><a href="/about" className="hover:text-accent transition-colors">About Me</a></li>
                 <li><a href="/contact" className="hover:text-accent transition-colors">Contact</a></li>
               </ul>
             </div>

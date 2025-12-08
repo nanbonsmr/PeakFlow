@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, LogOut, User, Shield, Home, FileText, Heart, Plane, Info } from "lucide-react";
+import { Menu, X, Moon, Sun, LogOut, User, Shield, Home, FileText, Zap, Heart, Cpu, TrendingUp, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
@@ -56,9 +56,10 @@ const Header = () => {
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/#articles", label: "Articles", icon: FileText },
-    { href: "/wellness", label: "Wellness", icon: Heart },
-    { href: "/travel", label: "Travel", icon: Plane },
+    { href: "/productivity", label: "Productivity", icon: Zap },
+    { href: "/lifestyle", label: "Lifestyle", icon: Heart },
+    { href: "/tech-tips", label: "Tech Tips", icon: Cpu },
+    { href: "/growth", label: "Growth", icon: TrendingUp },
     { href: "/about", label: "About", icon: Info },
   ];
 
