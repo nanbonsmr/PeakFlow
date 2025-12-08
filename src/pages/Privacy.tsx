@@ -12,7 +12,7 @@ const Privacy = () => {
             Privacy Policy
           </h1>
           <p className="text-muted-foreground animate-slide-up stagger-1">
-            Last updated: March 20, 2025
+            Last updated: December 8, 2025
           </p>
         </div>
 
@@ -20,7 +20,7 @@ const Privacy = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Introduction</h2>
             <p className="text-muted-foreground">
-              At Perspective, we take your privacy seriously. This Privacy Policy explains how we collect, 
+              At PeakFlow, we take your privacy seriously. This Privacy Policy explains how we collect, 
               use, disclose, and safeguard your information when you visit our website and subscribe to our newsletter.
             </p>
           </section>
@@ -126,7 +126,7 @@ const Privacy = () => {
               If you have any questions about this Privacy Policy, please contact us at:
             </p>
             <p className="text-muted-foreground mt-4">
-              Email: privacy@perspective.blog<br />
+              Email: privacy@peakflow.blog<br />
               Address: San Francisco, CA
             </p>
           </section>

@@ -12,7 +12,7 @@ const Terms = () => {
             Terms of Service
           </h1>
           <p className="text-muted-foreground animate-slide-up stagger-1">
-            Last updated: March 20, 2025
+            Last updated: December 8, 2025
           </p>
         </div>
 
@@ -20,7 +20,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Agreement to Terms</h2>
             <p className="text-muted-foreground">
-              By accessing or using Perspective's website and services, you agree to be bound by these Terms of Service. 
+              By accessing or using PeakFlow's website and services, you agree to be bound by these Terms of Service. 
               If you disagree with any part of these terms, you may not access our services.
             </p>
           </section>
@@ -28,7 +28,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Use License</h2>
             <p className="text-muted-foreground mb-4">
-              Permission is granted to temporarily access the materials on Perspective's website for personal, 
+              Permission is granted to temporarily access the materials on PeakFlow's website for personal, 
               non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
@@ -57,7 +57,7 @@ const Terms = () => {
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>In any way that violates any applicable law or regulation</li>
               <li>To transmit any harmful or malicious code</li>
-              <li>To impersonate or attempt to impersonate Perspective or any employee</li>
+              <li>To impersonate or attempt to impersonate PeakFlow or any employee</li>
               <li>To harass, abuse, or harm another person</li>
               <li>To spam or send unsolicited communications</li>
             </ul>
@@ -66,8 +66,8 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Intellectual Property</h2>
             <p className="text-muted-foreground">
-              All content on Perspective, including articles, images, logos, and designs, is the property of 
-              Perspective or its content creators and is protected by international copyright laws. 
+              All content on PeakFlow, including articles, images, logos, and designs, is the property of 
+              PeakFlow or its content creators and is protected by international copyright laws. 
               Unauthorized use of our content may violate copyright, trademark, and other laws.
             </p>
           </section>
@@ -75,7 +75,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Disclaimer</h2>
             <p className="text-muted-foreground">
-              The materials on Perspective's website are provided on an "as is" basis. Perspective makes no 
+              The materials on PeakFlow's website are provided on an "as is" basis. PeakFlow makes no 
               warranties, expressed or implied, and hereby disclaims and negates all other warranties including, 
               without limitation, implied warranties or conditions of merchantability, fitness for a particular 
               purpose, or non-infringement of intellectual property.
@@ -85,16 +85,16 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Limitations of Liability</h2>
             <p className="text-muted-foreground">
-              In no event shall Perspective or its suppliers be liable for any damages (including, without 
+              In no event shall PeakFlow or its suppliers be liable for any damages (including, without 
               limitation, damages for loss of data or profit, or due to business interruption) arising out of 
-              the use or inability to use the materials on Perspective's website.
+              the use or inability to use the materials on PeakFlow's website.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold mb-4">Links to Other Websites</h2>
             <p className="text-muted-foreground">
-              Our website may contain links to third-party websites that are not owned or controlled by Perspective. 
+              Our website may contain links to third-party websites that are not owned or controlled by PeakFlow. 
               We have no control over and assume no responsibility for the content, privacy policies, or practices 
               of any third-party websites.
             </p>
@@ -103,7 +103,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Modifications</h2>
             <p className="text-muted-foreground">
-              Perspective may revise these Terms of Service at any time without notice. By using this website, 
+              PeakFlow may revise these Terms of Service at any time without notice. By using this website, 
               you are agreeing to be bound by the current version of these Terms of Service.
             </p>
           </section>
@@ -122,7 +122,7 @@ const Terms = () => {
               If you have any questions about these Terms of Service, please contact us at:
             </p>
             <p className="text-muted-foreground mt-4">
-              Email: legal@perspective.blog<br />
+              Email: legal@peakflow.blog<br />
               Address: San Francisco, CA
             </p>
           </section>
