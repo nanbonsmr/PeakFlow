@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useSwipe } from "@/hooks/useSwipe";
+import { useIsMobile } from "@/hooks/use-mobile";
+import DashboardSidebar from "@/components/admin/DashboardSidebar";
+import DashboardTopBar from "@/components/admin/DashboardTopBar";
+import SwipeIndicator from "@/components/admin/SwipeIndicator";
 import {
   Table,
   TableBody,
@@ -20,13 +24,12 @@ import {
   Loader2,
   Mail,
   Download,
-  ArrowLeft,
 } from "lucide-react";
 import ArticleRow from "@/components/admin/ArticleRow";
 import UserRow from "@/components/admin/UserRow";
 import SubscriberRow from "@/components/admin/SubscriberRow";
 import ArticleDialog from "@/components/admin/ArticleDialog";
-import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface Article {
   id: string;
@@ -61,6 +64,7 @@ const Manage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const isMobile = useIsMobile();
 
   const [articles, setArticles] = useState<Article[]>([]);
   const [users, setUsers] = useState<UserRole[]>([]);
@@ -69,6 +73,8 @@ const Manage = () => {
   const [isArticleDialogOpen, setIsArticleDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [savingArticle, setSavingArticle] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const defaultTab = searchParams.get("tab") || "articles";
 
@@ -81,6 +87,26 @@ const Manage = () => {
     author: "",
     read_time: "5 min read",
     published: false,
+  });
+
+  // Swipe gestures for mobile sidebar
+  const handleSwipeRight = useCallback(() => {
+    if (isMobile && !mobileMenuOpen) {
+      setMobileMenuOpen(true);
+    }
+  }, [isMobile, mobileMenuOpen]);
+
+  const handleSwipeLeft = useCallback(() => {
+    if (isMobile && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  }, [isMobile, mobileMenuOpen]);
+
+  useSwipe({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    threshold: 50,
+    edgeWidth: 30,
   });
 
   useEffect(() => {
@@ -368,10 +394,14 @@ const Manage = () => {
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-dashboard-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-accent" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-dashboard-accent to-purple-500 flex items-center justify-center shadow-glow">
+              <Loader2 className="h-7 w-7 animate-spin text-white" />
+            </div>
+          </div>
+          <p className="text-muted-foreground font-medium">Loading...</p>
         </div>
       </div>
     );
@@ -382,194 +412,205 @@ const Manage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-dashboard-bg flex">
+      {/* Mobile swipe indicator */}
+      <SwipeIndicator visible={isMobile && !mobileMenuOpen} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in">
-          <div className="flex items-center gap-4">
-            <Link to="/admin">
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight">
-                Content Management
-              </h1>
-              <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
-                Manage articles, users, and subscribers
-              </p>
+      <DashboardSidebar
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
+      />
+
+      <div className={cn(
+        "flex-1 transition-all duration-300 flex flex-col",
+        "lg:ml-64",
+        sidebarCollapsed && "lg:ml-20"
+      )}>
+        <DashboardTopBar onMenuClick={() => setMobileMenuOpen(true)} />
+
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
+                  Content Management
+                </h1>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                  Manage articles, users, and subscribers
+                </p>
+              </div>
             </div>
+
+            {/* Tabs */}
+            <Tabs defaultValue={defaultTab} className="space-y-4 sm:space-y-6 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <TabsList className="bg-dashboard-bg p-1 sm:p-1.5 rounded-xl sm:rounded-2xl w-full sm:w-auto overflow-x-auto border border-dashboard-border">
+                  <TabsTrigger
+                    value="articles"
+                    className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-dashboard-accent data-[state=active]:text-white data-[state=active]:shadow-sm flex-1 sm:flex-none"
+                  >
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                    Articles
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="users"
+                    className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-dashboard-accent data-[state=active]:text-white data-[state=active]:shadow-sm flex-1 sm:flex-none"
+                  >
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                    Users
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="subscribers"
+                    className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-dashboard-accent data-[state=active]:text-white data-[state=active]:shadow-sm flex-1 sm:flex-none"
+                  >
+                    <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                    Subscribers
+                  </TabsTrigger>
+                </TabsList>
+
+                <Button
+                  onClick={() => {
+                    resetArticleForm();
+                    setIsArticleDialogOpen(true);
+                  }}
+                  className="rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto bg-dashboard-accent hover:bg-dashboard-accent/90"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Article
+                </Button>
+              </div>
+
+              <TabsContent value="articles" className="space-y-4">
+                <div className="bg-dashboard-card rounded-2xl border border-dashboard-border overflow-hidden shadow-sm overflow-x-auto">
+                  <Table className="min-w-[800px]">
+                    <TableHeader>
+                      <TableRow className="bg-dashboard-bg hover:bg-dashboard-bg border-dashboard-border">
+                        <TableHead className="font-semibold">Article</TableHead>
+                        <TableHead className="font-semibold">Category</TableHead>
+                        <TableHead className="font-semibold">Author</TableHead>
+                        <TableHead className="font-semibold">Read Time</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
+                        <TableHead className="font-semibold">Created</TableHead>
+                        <TableHead className="text-right font-semibold">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {articles.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="text-center py-16">
+                            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                              <FileText className="h-12 w-12 opacity-50" />
+                              <p className="font-medium">No articles yet</p>
+                              <p className="text-sm">Create your first article to get started</p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        articles.map((article) => (
+                          <ArticleRow
+                            key={article.id}
+                            article={article}
+                            onEdit={handleEditArticle}
+                            onDelete={handleDeleteArticle}
+                            onTogglePublish={handleTogglePublish}
+                          />
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="users" className="space-y-4">
+                <div className="bg-dashboard-card rounded-2xl border border-dashboard-border overflow-hidden shadow-sm overflow-x-auto">
+                  <Table className="min-w-[600px]">
+                    <TableHeader>
+                      <TableRow className="bg-dashboard-bg hover:bg-dashboard-bg border-dashboard-border">
+                        <TableHead className="font-semibold">User</TableHead>
+                        <TableHead className="font-semibold">Role</TableHead>
+                        <TableHead className="font-semibold">Joined</TableHead>
+                        <TableHead className="text-right font-semibold">Change Role</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="text-center py-16">
+                            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                              <Users className="h-12 w-12 opacity-50" />
+                              <p className="font-medium">No users yet</p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        users.map((userRole) => (
+                          <UserRow
+                            key={userRole.id}
+                            userRole={userRole}
+                            currentUserId={user?.id}
+                            onUpdateRole={handleUpdateUserRole}
+                          />
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="subscribers" className="space-y-4">
+                <div className="flex justify-end mb-4">
+                  <Button
+                    onClick={handleExportSubscribers}
+                    variant="outline"
+                    className="rounded-xl w-full sm:w-auto border-dashboard-border hover:bg-dashboard-bg"
+                    disabled={subscribers.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                </div>
+                <div className="bg-dashboard-card rounded-2xl border border-dashboard-border overflow-hidden shadow-sm overflow-x-auto">
+                  <Table className="min-w-[500px]">
+                    <TableHeader>
+                      <TableRow className="bg-dashboard-bg hover:bg-dashboard-bg border-dashboard-border">
+                        <TableHead className="font-semibold">Email</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
+                        <TableHead className="font-semibold">Subscribed</TableHead>
+                        <TableHead className="text-right font-semibold">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {subscribers.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="text-center py-16">
+                            <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                              <Mail className="h-12 w-12 opacity-50" />
+                              <p className="font-medium">No subscribers yet</p>
+                              <p className="text-sm">Subscribers will appear here when they sign up</p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        subscribers.map((subscriber) => (
+                          <SubscriberRow
+                            key={subscriber.id}
+                            subscriber={subscriber}
+                            onToggleActive={handleToggleSubscriberActive}
+                            onDelete={handleDeleteSubscriber}
+                          />
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue={defaultTab} className="space-y-4 sm:space-y-6 animate-fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <TabsList className="bg-muted/50 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl w-full sm:w-auto overflow-x-auto">
-              <TabsTrigger
-                value="articles"
-                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
-              >
-                <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                Articles
-              </TabsTrigger>
-              <TabsTrigger
-                value="users"
-                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
-              >
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                Users
-              </TabsTrigger>
-              <TabsTrigger
-                value="subscribers"
-                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
-              >
-                <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                Subscribers
-              </TabsTrigger>
-            </TabsList>
-
-            <Button
-              onClick={() => {
-                resetArticleForm();
-                setIsArticleDialogOpen(true);
-              }}
-              className="rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              New Article
-            </Button>
-          </div>
-
-          <TabsContent value="articles" className="space-y-4">
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
-              <Table className="min-w-[800px]">
-                <TableHeader>
-                  <TableRow className="bg-muted/30 hover:bg-muted/30">
-                    <TableHead className="font-semibold">Article</TableHead>
-                    <TableHead className="font-semibold">Category</TableHead>
-                    <TableHead className="font-semibold">Author</TableHead>
-                    <TableHead className="font-semibold">Read Time</TableHead>
-                    <TableHead className="font-semibold">Status</TableHead>
-                    <TableHead className="font-semibold">Created</TableHead>
-                    <TableHead className="text-right font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {articles.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="text-center py-16">
-                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                          <FileText className="h-12 w-12 opacity-50" />
-                          <p className="font-medium">No articles yet</p>
-                          <p className="text-sm">Create your first article to get started</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    articles.map((article) => (
-                      <ArticleRow
-                        key={article.id}
-                        article={article}
-                        onEdit={handleEditArticle}
-                        onDelete={handleDeleteArticle}
-                        onTogglePublish={handleTogglePublish}
-                      />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="users" className="space-y-4">
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
-              <Table className="min-w-[600px]">
-                <TableHeader>
-                  <TableRow className="bg-muted/30 hover:bg-muted/30">
-                    <TableHead className="font-semibold">User</TableHead>
-                    <TableHead className="font-semibold">Role</TableHead>
-                    <TableHead className="font-semibold">Joined</TableHead>
-                    <TableHead className="text-right font-semibold">Change Role</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center py-16">
-                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                          <Users className="h-12 w-12 opacity-50" />
-                          <p className="font-medium">No users yet</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    users.map((userRole) => (
-                      <UserRow
-                        key={userRole.id}
-                        userRole={userRole}
-                        currentUserId={user?.id}
-                        onUpdateRole={handleUpdateUserRole}
-                      />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="subscribers" className="space-y-4">
-            <div className="flex justify-end mb-4">
-              <Button
-                onClick={handleExportSubscribers}
-                variant="outline"
-                className="rounded-xl w-full sm:w-auto"
-                disabled={subscribers.length === 0}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
-              </Button>
-            </div>
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
-              <Table className="min-w-[500px]">
-                <TableHeader>
-                  <TableRow className="bg-muted/30 hover:bg-muted/30">
-                    <TableHead className="font-semibold">Email</TableHead>
-                    <TableHead className="font-semibold">Status</TableHead>
-                    <TableHead className="font-semibold">Subscribed</TableHead>
-                    <TableHead className="text-right font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {subscribers.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center py-16">
-                        <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                          <Mail className="h-12 w-12 opacity-50" />
-                          <p className="font-medium">No subscribers yet</p>
-                          <p className="text-sm">Subscribers will appear here when they sign up</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    subscribers.map((subscriber) => (
-                      <SubscriberRow
-                        key={subscriber.id}
-                        subscriber={subscriber}
-                        onToggleActive={handleToggleSubscriberActive}
-                        onDelete={handleDeleteSubscriber}
-                      />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
+        </main>
+      </div>
 
       <ArticleDialog
         open={isArticleDialogOpen}

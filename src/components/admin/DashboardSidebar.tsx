@@ -20,25 +20,24 @@ const menuItems = [
     href: "/dashboard",
   },
   {
-    title: "Articles",
-    icon: FileText,
+    title: "Admin",
+    icon: BarChart3,
     href: "/admin",
   },
   {
-    title: "Analytics",
-    icon: BarChart3,
-    href: "/dashboard",
-    disabled: true,
+    title: "Articles",
+    icon: FileText,
+    href: "/manage",
   },
   {
     title: "Users",
     icon: Users,
-    href: "/admin?tab=users",
+    href: "/manage?tab=users",
   },
   {
     title: "Subscribers",
     icon: Mail,
-    href: "/admin?tab=subscribers",
+    href: "/manage?tab=subscribers",
   },
 ];
 
@@ -123,14 +122,13 @@ const DashboardSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }
           {menuItems.map((item) => (
             <Link
               key={item.title}
-              to={item.disabled ? "#" : item.href}
+              to={item.href}
               onClick={handleNavClick}
               className={cn(
                 "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                 isActive(item.href)
                   ? "bg-dashboard-accent text-white shadow-lg shadow-dashboard-accent/30"
-                  : "text-muted-foreground hover:bg-dashboard-bg hover:text-foreground",
-                item.disabled && "opacity-40 cursor-not-allowed pointer-events-none"
+                  : "text-muted-foreground hover:bg-dashboard-bg hover:text-foreground"
               )}
             >
               <item.icon
@@ -140,14 +138,7 @@ const DashboardSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }
                 )}
               />
               {(!collapsed || mobileOpen) && (
-                <>
-                  <span className="font-medium text-sm">{item.title}</span>
-                  {item.disabled && (
-                    <span className="ml-auto text-[10px] bg-dashboard-accent-light text-dashboard-accent px-2 py-0.5 rounded-full font-medium">
-                      Soon
-                    </span>
-                  )}
-                </>
+                <span className="font-medium text-sm">{item.title}</span>
               )}
             </Link>
           ))}
