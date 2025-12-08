@@ -61,9 +61,9 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
       <div className="absolute top-10 right-10 w-32 h-32 bg-accent/10 rounded-full blur-3xl animate-glow-pulse" />
       <div className="absolute bottom-20 left-10 w-24 h-24 bg-secondary/20 rounded-full blur-2xl animate-glow-pulse" style={{ animationDelay: '1s' }} />
       
-      <div className="relative grid md:grid-cols-2 gap-6 md:gap-12 p-6 md:p-12 lg:p-16">
+      <div className="relative grid md:grid-cols-2 gap-8 md:gap-12 p-6 md:p-12 lg:p-16 items-center">
         {/* Left side - Image Carousel */}
-        <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden animate-scale-in group">
+        <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square rounded-[2rem] overflow-hidden animate-scale-in group shadow-2xl shadow-accent/10">
           {hasFeatures ? (
             <Carousel 
               setApi={setApi} 
@@ -114,18 +114,18 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
               className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-105"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
           
           {/* Floating badge with dots */}
           <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
-            <div className="px-4 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center gap-2 animate-float">
+            <div className="px-4 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center gap-2 animate-float shadow-lg">
               <Sparkles className="w-4 h-4 text-accent" />
               <span className="text-sm font-medium">Featured {hasFeatures && count > 1 ? `${current + 1}/${count}` : "Today"}</span>
             </div>
 
             {/* Dot indicators */}
             {count > 1 && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg">
                 {Array.from({ length: count }).map((_, index) => (
                   <button
                     key={index}
@@ -166,48 +166,48 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
 
         {/* Right side - Content */}
         <div className="flex flex-col justify-center space-y-6 md:space-y-8">
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-5">
             {currentArticle ? (
-              <div key={currentArticle.id} className="animate-fade-in">
-                <span className="inline-block px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent bg-accent/10 rounded-full mb-4">
+              <div key={currentArticle.id} className="animate-fade-in space-y-4">
+                <span className="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent bg-accent/10 rounded-full border border-accent/20">
                   {currentArticle.category}
                 </span>
-                <Link to={`/article/${currentArticle.id}`}>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight hover:text-accent transition-colors">
+                <Link to={`/article/${currentArticle.id}`} className="block group">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight group-hover:text-accent transition-colors duration-300 line-clamp-2">
                     {currentArticle.title}
                   </h1>
                 </Link>
-                <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl mt-4">
+                <p className="text-muted-foreground text-base md:text-lg leading-relaxed line-clamp-3">
                   {currentArticle.excerpt}
                 </p>
               </div>
             ) : (
-              <>
-                <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.05] tracking-tight animate-slide-down">
+              <div className="space-y-4">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight animate-slide-down">
                   Journey Through{" "}
-                  <span className="relative inline-block">
+                  <span className="relative inline-block text-accent">
                     Life's Spectrum
-                    <span className="absolute -bottom-2 left-0 right-0 h-3 bg-accent/20 -skew-x-3 -z-10" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-2 bg-accent/20 -skew-x-3 -z-10 rounded" />
                   </span>
                 </h1>
-                <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-xl animate-slide-up stagger-1">
+                <p className="text-muted-foreground text-base md:text-lg leading-relaxed animate-slide-up stagger-1 line-clamp-3">
                   Welcome to PeakFlow's Blog: A Realm of Reflection, Inspiration, and Discovery. Where Words Illuminate
                   Paths of Meaning.
                 </p>
-              </>
+              </div>
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6 pt-4 animate-slide-up stagger-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2 animate-slide-up stagger-2">
             {currentArticle ? (
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 md:px-10 md:py-6 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/20 w-full sm:w-auto group">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-5 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25 w-full sm:w-auto group">
                 <Link to={`/article/${currentArticle.id}`}>
                   <span>Read Article</span>
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </Button>
             ) : (
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 md:px-10 md:py-6 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/20 w-full sm:w-auto group">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-5 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25 w-full sm:w-auto group">
                 <span>Join Now</span>
                 <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
               </Button>
