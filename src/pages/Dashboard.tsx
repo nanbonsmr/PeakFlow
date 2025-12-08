@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSwipe } from "@/hooks/useSwipe";
+import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardSidebar from "@/components/admin/DashboardSidebar";
 import DashboardTopBar from "@/components/admin/DashboardTopBar";
 import StatCard from "@/components/admin/StatCard";
@@ -60,6 +62,27 @@ const Dashboard = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Swipe gestures for mobile sidebar
+  const handleSwipeRight = useCallback(() => {
+    if (isMobile && !mobileMenuOpen) {
+      setMobileMenuOpen(true);
+    }
+  }, [isMobile, mobileMenuOpen]);
+
+  const handleSwipeLeft = useCallback(() => {
+    if (isMobile && mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  }, [isMobile, mobileMenuOpen]);
+
+  useSwipe({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    threshold: 50,
+    edgeWidth: 30,
+  });
 
   useEffect(() => {
     if (!loading && !user) {
