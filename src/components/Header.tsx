@@ -56,7 +56,6 @@ const Header = () => {
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/productivity", label: "Productivity", icon: Zap },
     { href: "/lifestyle", label: "Lifestyle", icon: Heart },
     { href: "/tech-tips", label: "Tech Tips", icon: Cpu },
     { href: "/growth", label: "Growth", icon: TrendingUp },
