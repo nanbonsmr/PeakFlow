@@ -401,19 +401,19 @@ const Admin = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fade-in">
           <div>
-            <h1 className="text-4xl font-bold font-serif tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight">
               Dashboard
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
               Manage your content and users
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20">
-              <Shield className="h-4 w-4 text-accent" />
-              <span className="text-sm font-semibold text-accent">Admin</span>
+            <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-accent/10 rounded-full border border-accent/20">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-accent" />
+              <span className="text-xs sm:text-sm font-semibold text-accent">Admin</span>
             </div>
           </div>
         </div>
@@ -461,28 +461,28 @@ const Admin = () => {
         <ArticleCharts articles={articles} />
 
         {/* Tabs */}
-        <Tabs defaultValue="articles" className="space-y-6 animate-fade-in">
-          <div className="flex items-center justify-between">
-            <TabsList className="bg-muted/50 p-1.5 rounded-2xl">
+        <Tabs defaultValue="articles" className="space-y-4 sm:space-y-6 animate-fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <TabsList className="bg-muted/50 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl w-full sm:w-auto overflow-x-auto">
               <TabsTrigger
                 value="articles"
-                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
               >
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 Articles
               </TabsTrigger>
               <TabsTrigger
                 value="users"
-                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
               >
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 Users
               </TabsTrigger>
               <TabsTrigger
                 value="subscribers"
-                className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                className="rounded-lg sm:rounded-xl px-3 sm:px-6 text-xs sm:text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm flex-1 sm:flex-none"
               >
-                <Mail className="h-4 w-4 mr-2" />
+                <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 Subscribers
               </TabsTrigger>
             </TabsList>
@@ -492,7 +492,7 @@ const Admin = () => {
                 resetArticleForm();
                 setIsArticleDialogOpen(true);
               }}
-              className="rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              className="rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               New Article
@@ -500,8 +500,8 @@ const Admin = () => {
           </div>
 
           <TabsContent value="articles" className="space-y-4">
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
-              <Table>
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
+              <Table className="min-w-[800px]">
                 <TableHeader>
                   <TableRow className="bg-muted/30 hover:bg-muted/30">
                     <TableHead className="font-semibold">Article</TableHead>
@@ -541,8 +541,8 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-4">
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
-              <Table>
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
+              <Table className="min-w-[600px]">
                 <TableHeader>
                   <TableRow className="bg-muted/30 hover:bg-muted/30">
                     <TableHead className="font-semibold">User</TableHead>
@@ -581,15 +581,15 @@ const Admin = () => {
               <Button
                 onClick={handleExportSubscribers}
                 variant="outline"
-                className="rounded-xl"
+                className="rounded-xl w-full sm:w-auto"
                 disabled={subscribers.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
             </div>
-            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm">
-              <Table>
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm overflow-x-auto">
+              <Table className="min-w-[500px]">
                 <TableHeader>
                   <TableRow className="bg-muted/30 hover:bg-muted/30">
                     <TableHead className="font-semibold">Email</TableHead>
