@@ -198,7 +198,7 @@ const Dashboard = () => {
                     Here's what's happening with your blog today.
                   </p>
                 </div>
-                <Link to="/admin" className="self-start sm:self-auto">
+                <Link to="/manage" className="self-start sm:self-auto">
                   <Button className="rounded-xl bg-dashboard-accent hover:bg-dashboard-accent/90 shadow-lg shadow-dashboard-accent/25 transition-all hover:shadow-xl hover:shadow-dashboard-accent/30 gap-2 text-sm sm:text-base">
                     <PenLine className="h-4 w-4" />
                     New Article
@@ -263,19 +263,19 @@ const Dashboard = () => {
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
                   <Link
-                    to="/admin"
+                    to="/manage"
                     className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-dashboard-accent/5 hover:bg-dashboard-accent/10 border border-transparent hover:border-dashboard-accent/20 transition-all group"
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-dashboard-accent/15 flex items-center justify-center">
                         <PenLine className="h-4 w-4 sm:h-5 sm:w-5 text-dashboard-accent" />
                       </div>
-                      <span className="font-medium text-sm sm:text-base">Create Article</span>
+                      <span className="font-medium text-sm sm:text-base">Manage Articles</span>
                     </div>
                     <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-dashboard-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </Link>
                   <Link
-                    to="/admin?tab=users"
+                    to="/manage?tab=users"
                     className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-dashboard-success/5 hover:bg-dashboard-success/10 border border-transparent hover:border-dashboard-success/20 transition-all group"
                   >
                     <div className="flex items-center gap-3">
@@ -287,7 +287,7 @@ const Dashboard = () => {
                     <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-dashboard-success group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </Link>
                   <Link
-                    to="/admin?tab=subscribers"
+                    to="/manage?tab=subscribers"
                     className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-dashboard-warning/5 hover:bg-dashboard-warning/10 border border-transparent hover:border-dashboard-warning/20 transition-all group"
                   >
                     <div className="flex items-center gap-3">
@@ -309,7 +309,7 @@ const Dashboard = () => {
                     Recent Articles
                   </h3>
                   <Link
-                    to="/admin"
+                    to="/manage"
                     className="text-sm text-dashboard-accent hover:underline font-medium"
                   >
                     View all →

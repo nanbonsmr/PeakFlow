@@ -5,7 +5,6 @@ import {
   FileText,
   Users,
   Mail,
-  BarChart3,
   Home,
   ChevronLeft,
   Sparkles,
@@ -15,14 +14,9 @@ import logo from "@/assets/logo.png";
 
 const menuItems = [
   {
-    title: "Overview",
+    title: "Dashboard",
     icon: LayoutDashboard,
     href: "/dashboard",
-  },
-  {
-    title: "Admin",
-    icon: BarChart3,
-    href: "/admin",
   },
   {
     title: "Articles",
