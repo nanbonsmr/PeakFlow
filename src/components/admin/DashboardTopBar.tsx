@@ -1,4 +1,5 @@
-import { Search, Bell, Settings, ChevronDown, Menu } from "lucide-react";
+import { useState } from "react";
+import { Search, Bell, Settings, ChevronDown, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,14 +15,25 @@ import { Link } from "react-router-dom";
 
 interface DashboardTopBarProps {
   onMenuClick: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
-const DashboardTopBar = ({ onMenuClick }: DashboardTopBarProps) => {
+const DashboardTopBar = ({ onMenuClick, searchQuery = "", onSearchChange }: DashboardTopBarProps) => {
   const { user, signOut } = useAuth();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const initials = user?.email
     ? user.email.slice(0, 2).toUpperCase()
     : "AD";
+
+  const handleSearchChange = (value: string) => {
+    onSearchChange?.(value);
+  };
+
+  const clearSearch = () => {
+    onSearchChange?.("");
+  };
 
   return (
     <header className="h-14 sm:h-16 bg-dashboard-card border-b border-dashboard-border px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
@@ -37,16 +49,62 @@ const DashboardTopBar = ({ onMenuClick }: DashboardTopBarProps) => {
           <Menu className="h-5 w-5 text-muted-foreground" />
         </Button>
 
-        {/* Search */}
+        {/* Desktop Search */}
         <div className="hidden sm:block flex-1 max-w-xl">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search articles, users, subscribers..."
-              className="pl-10 bg-dashboard-bg border-dashboard-border rounded-xl h-10 focus:ring-2 focus:ring-dashboard-accent/20 focus:border-dashboard-accent transition-all"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="pl-10 pr-10 bg-dashboard-bg border-dashboard-border rounded-xl h-10 focus:ring-2 focus:ring-dashboard-accent/20 focus:border-dashboard-accent transition-all"
             />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={clearSearch}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-dashboard-border"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Mobile Search Expanded */}
+        {mobileSearchOpen && (
+          <div className="absolute inset-x-0 top-0 h-14 bg-dashboard-card border-b border-dashboard-border px-4 flex items-center gap-2 sm:hidden z-50">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                autoFocus
+                className="pl-10 pr-10 bg-dashboard-bg border-dashboard-border rounded-xl h-10 focus:ring-2 focus:ring-dashboard-accent/20 focus:border-dashboard-accent transition-all"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearSearch}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-dashboard-border"
+                >
+                  <X className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileSearchOpen(false)}
+              className="h-10 w-10 rounded-xl hover:bg-dashboard-bg"
+            >
+              <X className="h-5 w-5 text-muted-foreground" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Actions */}
@@ -55,6 +113,7 @@ const DashboardTopBar = ({ onMenuClick }: DashboardTopBarProps) => {
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => setMobileSearchOpen(true)}
           className="sm:hidden h-10 w-10 rounded-xl hover:bg-dashboard-bg"
         >
           <Search className="h-5 w-5 text-muted-foreground" />
@@ -104,7 +163,7 @@ const DashboardTopBar = ({ onMenuClick }: DashboardTopBarProps) => {
               <Link to="/">Back to Site</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-              <Link to="/admin">Content Manager</Link>
+              <Link to="/manage">Content Manager</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-dashboard-border" />
             <DropdownMenuItem

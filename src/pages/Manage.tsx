@@ -80,6 +80,7 @@ const Manage = () => {
   const [savingArticle, setSavingArticle] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   
 
@@ -397,6 +398,33 @@ const Manage = () => {
     }
   };
 
+  // Filter data based on search query
+  const filteredArticles = articles.filter((article) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      article.title.toLowerCase().includes(query) ||
+      article.category.toLowerCase().includes(query) ||
+      article.author.toLowerCase().includes(query) ||
+      (article.excerpt && article.excerpt.toLowerCase().includes(query))
+    );
+  });
+
+  const filteredUsers = users.filter((userRole) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      userRole.user_id.toLowerCase().includes(query) ||
+      userRole.role.toLowerCase().includes(query)
+    );
+  });
+
+  const filteredSubscribers = subscribers.filter((subscriber) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return subscriber.email.toLowerCase().includes(query);
+  });
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-dashboard-bg flex items-center justify-center">
@@ -433,7 +461,7 @@ const Manage = () => {
         "lg:ml-64",
         sidebarCollapsed && "lg:ml-20"
       )}>
-        <DashboardTopBar onMenuClick={() => setMobileMenuOpen(true)} />
+        <DashboardTopBar onMenuClick={() => setMobileMenuOpen(true)} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto">
@@ -503,18 +531,18 @@ const Manage = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {articles.length === 0 ? (
+                      {filteredArticles.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="text-center py-16">
                             <div className="flex flex-col items-center gap-3 text-muted-foreground">
                               <FileText className="h-12 w-12 opacity-50" />
-                              <p className="font-medium">No articles yet</p>
-                              <p className="text-sm">Create your first article to get started</p>
+                              <p className="font-medium">{searchQuery ? "No articles match your search" : "No articles yet"}</p>
+                              <p className="text-sm">{searchQuery ? "Try a different search term" : "Create your first article to get started"}</p>
                             </div>
                           </td>
                         </tr>
                       ) : (
-                        articles.map((article) => (
+                        filteredArticles.map((article) => (
                           <ArticleRow
                             key={article.id}
                             article={article}
@@ -541,17 +569,17 @@ const Manage = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {users.length === 0 ? (
+                      {filteredUsers.length === 0 ? (
                         <tr>
                           <td colSpan={4} className="text-center py-16">
                             <div className="flex flex-col items-center gap-3 text-muted-foreground">
                               <Users className="h-12 w-12 opacity-50" />
-                              <p className="font-medium">No users yet</p>
+                              <p className="font-medium">{searchQuery ? "No users match your search" : "No users yet"}</p>
                             </div>
                           </td>
                         </tr>
                       ) : (
-                        users.map((userRole) => (
+                        filteredUsers.map((userRole) => (
                           <UserRow
                             key={userRole.id}
                             userRole={userRole}
@@ -588,18 +616,18 @@ const Manage = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {subscribers.length === 0 ? (
+                      {filteredSubscribers.length === 0 ? (
                         <tr>
                           <td colSpan={4} className="text-center py-16">
                             <div className="flex flex-col items-center gap-3 text-muted-foreground">
                               <Mail className="h-12 w-12 opacity-50" />
-                              <p className="font-medium">No subscribers yet</p>
-                              <p className="text-sm">Subscribers will appear here when they sign up</p>
+                              <p className="font-medium">{searchQuery ? "No subscribers match your search" : "No subscribers yet"}</p>
+                              <p className="text-sm">{searchQuery ? "Try a different search term" : "Subscribers will appear here when they sign up"}</p>
                             </div>
                           </td>
                         </tr>
                       ) : (
-                        subscribers.map((subscriber) => (
+                        filteredSubscribers.map((subscriber) => (
                           <SubscriberRow
                             key={subscriber.id}
                             subscriber={subscriber}
