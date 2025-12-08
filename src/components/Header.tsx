@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, LogOut, User, Shield } from "lucide-react";
+import { Menu, X, Moon, Sun, LogOut, User, Shield, Home, FileText, Heart, Plane, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,12 +10,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const { user, isAdmin, signOut } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -27,6 +36,11 @@ const Header = () => {
     }
   }, []);
 
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
@@ -38,6 +52,19 @@ const Header = () => {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+  };
+
+  const navItems = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/#articles", label: "Articles", icon: FileText },
+    { href: "/wellness", label: "Wellness", icon: Heart },
+    { href: "/travel", label: "Travel", icon: Plane },
+    { href: "/about", label: "About", icon: Info },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/") return location.pathname === "/";
+    return location.pathname.startsWith(href.replace("/#", "/"));
   };
 
   return (
@@ -53,26 +80,24 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
-            <a href="/" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Home
-            </a>
-            <a href="/#articles" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Articles
-            </a>
-            <a href="/wellness" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Wellness
-            </a>
-            <a href="/travel" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Travel
-            </a>
-            <a href="/about" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              About
-            </a>
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium rounded-full px-4 py-2 transition-all ${
+                  isActive(item.href)
+                    ? "bg-accent/10 text-accent"
+                    : "hover:bg-muted/60"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <button
               onClick={toggleTheme}
               className="relative p-2 sm:p-2.5 rounded-full hover:bg-muted/60 transition-all duration-300 group overflow-hidden"
@@ -103,7 +128,7 @@ const Header = () => {
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                <DropdownMenuContent align="end" className="w-48 rounded-xl bg-popover border border-border shadow-lg z-50">
                   {isAdmin && (
                     <>
                       <DropdownMenuItem asChild>
@@ -127,7 +152,7 @@ const Header = () => {
             ) : (
               <Button
                 asChild
-                className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group"
+                className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 py-2 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group"
               >
                 <a href="/auth">
                   <span>Join Now</span>
@@ -137,62 +162,106 @@ const Header = () => {
             )}
 
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-1.5 sm:p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
-            </button>
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="md:hidden p-2 rounded-full hover:bg-muted/60 transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[350px] bg-background border-l border-border p-0">
+                <SheetHeader className="p-6 border-b border-border">
+                  <SheetTitle className="flex items-center gap-2">
+                    <img src={logo} alt="PeakFlow" className="w-8 h-8" />
+                    <span className="font-serif font-bold text-xl">PeakFlow</span>
+                  </SheetTitle>
+                </SheetHeader>
+                
+                <div className="flex flex-col h-[calc(100%-80px)]">
+                  {/* Navigation Links */}
+                  <nav className="flex-1 p-4 space-y-1">
+                    {navItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                            isActive(item.href)
+                              ? "bg-accent/10 text-accent"
+                              : "hover:bg-muted/60"
+                          }`}
+                        >
+                          <Icon className="h-5 w-5" />
+                          {item.label}
+                        </a>
+                      );
+                    })}
+                    
+                    {user && isAdmin && (
+                      <a
+                        href="/admin"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                          location.pathname === "/admin"
+                            ? "bg-accent/10 text-accent"
+                            : "hover:bg-muted/60"
+                        }`}
+                      >
+                        <Shield className="h-5 w-5" />
+                        Admin Dashboard
+                      </a>
+                    )}
+                  </nav>
+                  
+                  {/* User Section */}
+                  <div className="p-4 border-t border-border space-y-3">
+                    {user ? (
+                      <>
+                        <div className="flex items-center gap-3 px-4 py-3 bg-muted/30 rounded-xl">
+                          <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-accent" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {user.email?.split("@")[0]}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {user.email}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => {
+                            signOut();
+                            setIsMenuOpen(false);
+                          }}
+                          variant="outline"
+                          className="w-full rounded-xl h-12 text-destructive border-destructive/30 hover:bg-destructive/10"
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign out
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        asChild
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-12 text-base font-medium"
+                      >
+                        <a href="/auth" onClick={() => setIsMenuOpen(false)}>
+                          Join Now
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in">
-            <nav className="flex flex-col gap-4">
-              <a href="/" className="text-sm font-medium hover:text-accent transition-colors">
-                Home
-              </a>
-              <a href="/#articles" className="text-sm font-medium hover:text-accent transition-colors">
-                Articles
-              </a>
-              <a href="/wellness" className="text-sm font-medium hover:text-accent transition-colors">
-                Wellness
-              </a>
-              <a href="/travel" className="text-sm font-medium hover:text-accent transition-colors">
-                Travel
-              </a>
-              <a href="/about" className="text-sm font-medium hover:text-accent transition-colors">
-                About
-              </a>
-              {user ? (
-                <>
-                  {isAdmin && (
-                    <a
-                      href="/admin"
-                      className="text-sm font-medium hover:text-accent transition-colors flex items-center gap-2"
-                    >
-                      <Shield className="h-4 w-4" />
-                      Admin Dashboard
-                    </a>
-                  )}
-                  <Button
-                    onClick={() => signOut()}
-                    variant="outline"
-                    className="rounded-full w-full"
-                  >
-                    Sign out
-                  </Button>
-                </>
-              ) : (
-                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
-                  <a href="/auth">Join Now</a>
-                </Button>
-              )}
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   );
