@@ -41,11 +41,9 @@ interface ArticleDialogProps {
 
 const categories = [
   { value: "general", label: "General" },
-  { value: "wellness", label: "Wellness" },
-  { value: "travel", label: "Travel" },
-  { value: "creativity", label: "Creativity" },
-  { value: "growth", label: "Growth" },
   { value: "lifestyle", label: "Lifestyle" },
+  { value: "tech", label: "Tech Tips" },
+  { value: "growth", label: "Personal Growth" },
 ];
 
 const ArticleDialog = ({
