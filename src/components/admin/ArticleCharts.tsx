@@ -14,7 +14,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { FileText, TrendingUp, PieChartIcon } from "lucide-react";
+import { TrendingUp, PieChart as PieChartIcon, Layers } from "lucide-react";
 
 interface Article {
   id: string;
@@ -29,33 +29,32 @@ interface ArticleChartsProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  wellness: "hsl(280, 30%, 55%)",
-  travel: "hsl(195, 50%, 50%)",
-  creativity: "hsl(330, 40%, 55%)",
-  growth: "hsl(50, 45%, 50%)",
-  lifestyle: "hsl(140, 20%, 50%)",
-  general: "hsl(0, 0%, 50%)",
+  wellness: "hsl(280, 60%, 60%)",
+  travel: "hsl(195, 70%, 55%)",
+  creativity: "hsl(330, 60%, 60%)",
+  growth: "hsl(50, 70%, 50%)",
+  lifestyle: "hsl(160, 60%, 50%)",
+  general: "hsl(220, 15%, 55%)",
+  "tech tips": "hsl(210, 90%, 55%)",
+  "personal growth": "hsl(140, 60%, 50%)",
 };
 
 const STATUS_COLORS = {
-  published: "hsl(140, 20%, 50%)",
-  draft: "hsl(0, 0%, 60%)",
+  published: "hsl(160, 70%, 45%)",
+  draft: "hsl(220, 15%, 70%)",
 };
 
 const ArticleCharts = ({ articles }: ArticleChartsProps) => {
-  // Articles over time (last 6 months)
   const timelineData = useMemo(() => {
     const months: Record<string, number> = {};
     const now = new Date();
     
-    // Initialize last 6 months
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = date.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
       months[key] = 0;
     }
     
-    // Count articles per month
     articles.forEach((article) => {
       const date = new Date(article.created_at);
       const key = date.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
@@ -70,7 +69,6 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
     }));
   }, [articles]);
 
-  // Articles by category
   const categoryData = useMemo(() => {
     const categories: Record<string, number> = {};
     
@@ -83,12 +81,11 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
       .map(([name, value]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1),
         value,
-        fill: CATEGORY_COLORS[name] || CATEGORY_COLORS.general,
+        fill: CATEGORY_COLORS[name.toLowerCase()] || CATEGORY_COLORS.general,
       }))
       .sort((a, b) => b.value - a.value);
   }, [articles]);
 
-  // Published vs Draft
   const statusData = useMemo(() => {
     const published = articles.filter((a) => a.published).length;
     const draft = articles.filter((a) => !a.published).length;
@@ -102,9 +99,9 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
-          <p className="text-sm font-medium">{label}</p>
-          <p className="text-sm text-accent">
+        <div className="bg-dashboard-card border border-dashboard-border rounded-xl px-4 py-3 shadow-soft-lg">
+          <p className="text-sm font-semibold">{label}</p>
+          <p className="text-sm text-dashboard-accent font-medium">
             {payload[0].value} articles
           </p>
         </div>
@@ -116,9 +113,9 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
-          <p className="text-sm font-medium">{payload[0].name}</p>
-          <p className="text-sm text-accent">{payload[0].value} articles</p>
+        <div className="bg-dashboard-card border border-dashboard-border rounded-xl px-4 py-3 shadow-soft-lg">
+          <p className="text-sm font-semibold">{payload[0].name}</p>
+          <p className="text-sm text-dashboard-accent font-medium">{payload[0].value} articles</p>
         </div>
       );
     }
@@ -130,29 +127,35 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Timeline Chart */}
-      <div className="lg:col-span-2 bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <TrendingUp className="h-5 w-5 text-accent" />
-          <h3 className="font-semibold">Articles Over Time</h3>
+      <div className="lg:col-span-2 bg-dashboard-card rounded-2xl border border-dashboard-border p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 rounded-xl bg-dashboard-accent/10">
+            <TrendingUp className="h-5 w-5 text-dashboard-accent" />
+          </div>
+          <div>
+            <h3 className="font-semibold">Content Growth</h3>
+            <p className="text-xs text-muted-foreground">Articles over the last 6 months</p>
+          </div>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={timelineData}>
               <defs>
                 <linearGradient id="colorArticles" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(140, 20%, 50%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(140, 20%, 50%)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(250, 90%, 65%)" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="hsl(250, 90%, 65%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--dashboard-border))" vertical={false} />
               <XAxis
                 dataKey="month"
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                dy={10}
               />
               <YAxis
                 stroke="hsl(var(--muted-foreground))"
@@ -160,13 +163,14 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
                 tickLine={false}
                 axisLine={false}
                 allowDecimals={false}
+                dx={-10}
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="articles"
-                stroke="hsl(140, 20%, 50%)"
-                strokeWidth={2}
+                stroke="hsl(250, 90%, 65%)"
+                strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorArticles)"
               />
@@ -176,20 +180,25 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
       </div>
 
       {/* Status Pie Chart */}
-      <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <PieChartIcon className="h-5 w-5 text-accent" />
-          <h3 className="font-semibold">Status</h3>
+      <div className="bg-dashboard-card rounded-2xl border border-dashboard-border p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 rounded-xl bg-dashboard-success/10">
+            <PieChartIcon className="h-5 w-5 text-dashboard-success" />
+          </div>
+          <div>
+            <h3 className="font-semibold">Status</h3>
+            <p className="text-xs text-muted-foreground">Published vs Draft</p>
+          </div>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={statusData}
                 cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                cy="45%"
+                innerRadius={55}
+                outerRadius={85}
                 paddingAngle={4}
                 dataKey="value"
               >
@@ -202,7 +211,7 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
                 verticalAlign="bottom"
                 height={36}
                 formatter={(value: string) => (
-                  <span className="text-sm text-muted-foreground">{value}</span>
+                  <span className="text-xs text-muted-foreground font-medium">{value}</span>
                 )}
               />
             </PieChart>
@@ -211,15 +220,20 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
       </div>
 
       {/* Category Bar Chart */}
-      <div className="lg:col-span-3 bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <FileText className="h-5 w-5 text-accent" />
-          <h3 className="font-semibold">Articles by Category</h3>
+      <div className="lg:col-span-3 bg-dashboard-card rounded-2xl border border-dashboard-border p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 rounded-xl bg-dashboard-warning/10">
+            <Layers className="h-5 w-5 text-dashboard-warning" />
+          </div>
+          <div>
+            <h3 className="font-semibold">Categories</h3>
+            <p className="text-xs text-muted-foreground">Distribution by category</p>
+          </div>
         </div>
-        <div className="h-[200px]">
+        <div className="h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={categoryData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--dashboard-border))" horizontal={false} />
               <XAxis
                 type="number"
                 stroke="hsl(var(--muted-foreground))"
@@ -235,13 +249,13 @@ const ArticleCharts = ({ articles }: ArticleChartsProps) => {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                width={80}
+                width={100}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="value"
                 radius={[0, 8, 8, 0]}
-                barSize={24}
+                barSize={28}
               >
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill} />
