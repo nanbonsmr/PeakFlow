@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Moon, Sun, LogOut, User, Shield, Home, FileText, Zap, Heart, Cpu, TrendingUp, Info } from "lucide-react";
+import { Menu, X, Moon, Sun, LogOut, User, Shield, Home, FileText, Zap, Heart, Cpu, TrendingUp, Info, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
@@ -98,6 +98,15 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {/* Search Button */}
+            <a
+              href="/search"
+              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/60 transition-all duration-300"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+            </a>
+
             <button
               onClick={toggleTheme}
               className="relative p-2 sm:p-2.5 rounded-full hover:bg-muted/60 transition-all duration-300 group overflow-hidden"
