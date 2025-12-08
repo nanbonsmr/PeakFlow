@@ -3,8 +3,8 @@ import ArticleCard from "@/components/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const Creativity = () => {
-  const { articles: creativityArticles, loading } = useArticles("creativity");
+const TechTips = () => {
+  const { articles: techArticles, loading } = useArticles("tech");
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
@@ -14,11 +14,11 @@ const Creativity = () => {
         {/* Hero Section */}
         <div className="mb-16 text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
-            Creativity & Expression
+            Tech Tips
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            Unlock your creative potential and explore the art of authentic self-expression. 
-            From overcoming blocks to building sustainable creative practices, discover insights that nurture your artistic journey.
+            Stay ahead with the latest tools, apps, and digital strategies. 
+            Learn how to leverage technology to work smarter, automate tasks, and simplify your digital life.
           </p>
         </div>
 
@@ -30,9 +30,9 @@ const Creativity = () => {
                 <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
               ))}
             </div>
-          ) : creativityArticles.length > 0 ? (
+          ) : techArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {creativityArticles.map((article, index) => (
+              {techArticles.map((article, index) => (
                 <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
                   <ArticleCard 
                     id={article.id}
@@ -46,26 +46,25 @@ const Creativity = () => {
             </div>
           ) : (
             <div className="text-center py-16 text-muted-foreground">
-              <p className="text-lg">No creativity articles published yet.</p>
+              <p className="text-lg">No tech articles published yet.</p>
               <p className="text-sm mt-2">Check back soon for new content!</p>
             </div>
           )}
         </section>
 
-        {/* About Creativity */}
+        {/* Tech Philosophy */}
         <section className="mt-16 rounded-2xl bg-card p-8 md:p-12">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6">Nurturing Creative Spirit</h2>
+            <h2 className="text-3xl font-bold mb-6">Technology That Works For You</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Creativity isn't reserved for artists—it's a fundamental human capacity that enriches every aspect of life. 
-                Whether you're writing, designing, problem-solving, or simply reimagining your daily routine, 
-                creative thinking opens doors to innovation and fulfillment.
+                Technology should simplify your life, not complicate it. The right tools can automate 
+                repetitive tasks, streamline your workflow, and free up time for what matters most.
               </p>
               <p>
-                We explore the practices, mindsets, and tools that help creatives of all kinds stay inspired, 
-                overcome obstacles, and build sustainable creative lives. From finding your unique voice to 
-                navigating the practical challenges of creative work, we're here to support your journey.
+                From productivity apps and note-taking systems to automation workflows and AI tools, 
+                we review and recommend only what we've tested ourselves. No sponsored content, no 
+                fluff—just honest insights to help you build a tech stack that actually works.
               </p>
             </div>
           </div>
@@ -75,4 +74,4 @@ const Creativity = () => {
   );
 };
 
-export default Creativity;
+export default TechTips;

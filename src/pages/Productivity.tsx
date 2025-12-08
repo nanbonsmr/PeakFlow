@@ -3,8 +3,8 @@ import ArticleCard from "@/components/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const Wellness = () => {
-  const { articles: wellnessArticles, loading } = useArticles("wellness");
+const Productivity = () => {
+  const { articles: productivityArticles, loading } = useArticles("productivity");
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
@@ -14,11 +14,11 @@ const Wellness = () => {
         {/* Hero Section */}
         <div className="mb-16 text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
-            Wellness & Self-Care
+            Productivity
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            Discover practices, insights, and strategies to nurture your physical, mental, and emotional wellbeing. 
-            From mindful routines to holistic health approaches, explore ways to create balance and vitality in your daily life.
+            Master your time, optimize your workflow, and achieve more with less stress. 
+            Discover proven strategies, tools, and frameworks to boost your efficiency and focus.
           </p>
         </div>
 
@@ -30,9 +30,9 @@ const Wellness = () => {
                 <Skeleton key={i} className="aspect-[4/3] rounded-[2.5rem]" />
               ))}
             </div>
-          ) : wellnessArticles.length > 0 ? (
+          ) : productivityArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {wellnessArticles.map((article, index) => (
+              {productivityArticles.map((article, index) => (
                 <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
                   <ArticleCard 
                     id={article.id}
@@ -46,7 +46,7 @@ const Wellness = () => {
             </div>
           ) : (
             <div className="text-center py-16 text-muted-foreground">
-              <p className="text-lg">No wellness articles published yet.</p>
+              <p className="text-lg">No productivity articles published yet.</p>
               <p className="text-sm mt-2">Check back soon for new content!</p>
             </div>
           )}
@@ -55,16 +55,17 @@ const Wellness = () => {
         {/* Featured Content */}
         <section className="mt-16 rounded-2xl bg-card p-8 md:p-12">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6">Why Wellness Matters</h2>
+            <h2 className="text-3xl font-bold mb-6">The Art of Getting Things Done</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Wellness is not just about physical health—it's about creating harmony between body, mind, and spirit. 
-                In our fast-paced world, taking time to nurture ourselves isn't a luxury; it's essential for sustainable living.
+                Productivity isn't about doing more—it's about doing what matters most. In a world full of 
+                distractions, the ability to focus and execute effectively is a superpower.
               </p>
               <p>
-                Through thoughtful self-care practices, we can build resilience, improve our relationships, enhance our 
-                productivity, and ultimately, live more fulfilling lives. Whether it's through nutrition, movement, 
-                meditation, or simply learning to rest, every small step toward wellness counts.
+                From time-blocking techniques and task management systems to deep work strategies and 
+                automation tools, we share actionable insights that help you work smarter. Whether you're 
+                a solo entrepreneur, remote worker, or team leader, these principles will transform how 
+                you approach your work.
               </p>
             </div>
           </div>
@@ -74,4 +75,4 @@ const Wellness = () => {
   );
 };
 
-export default Wellness;
+export default Productivity;

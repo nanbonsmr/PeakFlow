@@ -6,9 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Article from "./pages/Article";
-import Wellness from "./pages/Wellness";
-import Travel from "./pages/Travel";
-import Creativity from "./pages/Creativity";
+import Productivity from "./pages/Productivity";
+import Lifestyle from "./pages/Lifestyle";
+import TechTips from "./pages/TechTips";
 import Growth from "./pages/Growth";
 import About from "./pages/About";
 import Authors from "./pages/Authors";
@@ -32,9 +32,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/article/:id" element={<Article />} />
-            <Route path="/wellness" element={<Wellness />} />
-            <Route path="/travel" element={<Travel />} />
-            <Route path="/creativity" element={<Creativity />} />
+            <Route path="/productivity" element={<Productivity />} />
+            <Route path="/lifestyle" element={<Lifestyle />} />
+            <Route path="/tech-tips" element={<TechTips />} />
             <Route path="/growth" element={<Growth />} />
             <Route path="/about" element={<About />} />
             <Route path="/authors" element={<Authors />} />
