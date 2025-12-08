@@ -1,12 +1,12 @@
 import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
+import CommentsSection from "@/components/CommentsSection";
 import { useArticle, useRelatedArticles } from "@/hooks/useArticles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-
 const Article = () => {
   const { id } = useParams<{ id: string }>();
   const { article, loading, error } = useArticle(id);
@@ -160,6 +160,9 @@ const Article = () => {
               </p>
             )}
           </div>
+
+          {/* Comments Section */}
+          <CommentsSection articleId={id!} />
 
           {/* Mobile Share Buttons */}
           <div className="md:hidden mb-12 pb-12 border-b border-border">
