@@ -1,4 +1,4 @@
-import { Search, Bell, Settings, ChevronDown } from "lucide-react";
+import { Search, Bell, Settings, ChevronDown, Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,11 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 
-const DashboardTopBar = () => {
+interface DashboardTopBarProps {
+  onMenuClick: () => void;
+}
+
+const DashboardTopBar = ({ onMenuClick }: DashboardTopBarProps) => {
   const { user, signOut } = useAuth();
 
   const initials = user?.email
@@ -20,20 +24,42 @@ const DashboardTopBar = () => {
     : "AD";
 
   return (
-    <header className="h-16 bg-dashboard-card border-b border-dashboard-border px-6 flex items-center justify-between sticky top-0 z-30">
-      {/* Search */}
-      <div className="flex-1 max-w-xl">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search articles, users, subscribers..."
-            className="pl-10 bg-dashboard-bg border-dashboard-border rounded-xl h-10 focus:ring-2 focus:ring-dashboard-accent/20 focus:border-dashboard-accent transition-all"
-          />
+    <header className="h-14 sm:h-16 bg-dashboard-card border-b border-dashboard-border px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+      {/* Left Section - Menu & Search */}
+      <div className="flex items-center gap-3 flex-1">
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMenuClick}
+          className="lg:hidden h-10 w-10 rounded-xl hover:bg-dashboard-bg"
+        >
+          <Menu className="h-5 w-5 text-muted-foreground" />
+        </Button>
+
+        {/* Search */}
+        <div className="hidden sm:block flex-1 max-w-xl">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search articles, users, subscribers..."
+              className="pl-10 bg-dashboard-bg border-dashboard-border rounded-xl h-10 focus:ring-2 focus:ring-dashboard-accent/20 focus:border-dashboard-accent transition-all"
+            />
+          </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 ml-6">
+      <div className="flex items-center gap-2 sm:gap-3 ml-4 sm:ml-6">
+        {/* Mobile Search Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="sm:hidden h-10 w-10 rounded-xl hover:bg-dashboard-bg"
+        >
+          <Search className="h-5 w-5 text-muted-foreground" />
+        </Button>
+
         {/* Notifications */}
         <Button
           variant="ghost"
@@ -44,11 +70,11 @@ const DashboardTopBar = () => {
           <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-dashboard-accent" />
         </Button>
 
-        {/* Settings */}
+        {/* Settings - Hidden on mobile */}
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-xl hover:bg-dashboard-bg"
+          className="hidden sm:flex h-10 w-10 rounded-xl hover:bg-dashboard-bg"
         >
           <Settings className="h-5 w-5 text-muted-foreground" />
         </Button>
@@ -65,7 +91,7 @@ const DashboardTopBar = () => {
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-dashboard-card border-dashboard-border rounded-xl p-2">
