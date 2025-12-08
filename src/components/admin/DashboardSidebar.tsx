@@ -9,15 +9,18 @@ const menuItems = [{
 }, {
   title: "Articles",
   icon: FileText,
-  href: "/manage"
+  href: "/manage",
+  tab: "articles"
 }, {
   title: "Users",
   icon: Users,
-  href: "/manage?tab=users"
+  href: "/manage",
+  tab: "users"
 }, {
   title: "Subscribers",
   icon: Mail,
-  href: "/manage?tab=subscribers"
+  href: "/manage",
+  tab: "subscribers"
 }];
 const bottomItems = [{
   title: "Back to Site",
@@ -37,11 +40,12 @@ const DashboardSidebar = ({
   setMobileOpen
 }: DashboardSidebarProps) => {
   const location = useLocation();
-  const isActive = (href: string) => {
-    if (href.includes("?")) {
-      return location.pathname + location.search === href;
+  const isActive = (href: string, tab?: string) => {
+    if (href === "/manage") {
+      const currentTab = new URLSearchParams(location.search).get("tab") || "articles";
+      return location.pathname === "/manage" && currentTab === (tab || "articles");
     }
-    return location.pathname === href && !location.search;
+    return location.pathname === href;
   };
   const handleNavClick = () => {
     setMobileOpen(false);
@@ -77,10 +81,15 @@ const DashboardSidebar = ({
           {(!collapsed || mobileOpen) && <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest px-3 mb-3">
               Main Menu
             </p>}
-          {menuItems.map(item => <Link key={item.title} to={item.href} onClick={handleNavClick} className={cn("flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative", isActive(item.href) ? "bg-dashboard-accent text-white shadow-lg shadow-dashboard-accent/30" : "text-muted-foreground hover:bg-dashboard-bg hover:text-foreground")}>
-              <item.icon className={cn("h-5 w-5 flex-shrink-0 transition-colors", isActive(item.href) ? "text-white" : "group-hover:text-foreground")} />
-              {(!collapsed || mobileOpen) && <span className="font-medium text-sm">{item.title}</span>}
-            </Link>)}
+          {menuItems.map(item => {
+            const linkHref = item.tab ? `${item.href}?tab=${item.tab}` : item.href;
+            return (
+              <Link key={item.title} to={linkHref} onClick={handleNavClick} className={cn("flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative", isActive(item.href, item.tab) ? "bg-dashboard-accent text-white shadow-lg shadow-dashboard-accent/30" : "text-muted-foreground hover:bg-dashboard-bg hover:text-foreground")}>
+                <item.icon className={cn("h-5 w-5 flex-shrink-0 transition-colors", isActive(item.href, item.tab) ? "text-white" : "group-hover:text-foreground")} />
+                {(!collapsed || mobileOpen) && <span className="font-medium text-sm">{item.title}</span>}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Pro Upgrade Card */}

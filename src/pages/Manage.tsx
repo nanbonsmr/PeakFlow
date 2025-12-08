@@ -63,8 +63,13 @@ const Manage = () => {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
+  const currentTab = searchParams.get("tab") || "articles";
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
 
   const [articles, setArticles] = useState<Article[]>([]);
   const [users, setUsers] = useState<UserRole[]>([]);
@@ -76,7 +81,7 @@ const Manage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const defaultTab = searchParams.get("tab") || "articles";
+  
 
   const [articleForm, setArticleForm] = useState({
     title: "",
@@ -445,7 +450,7 @@ const Manage = () => {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue={defaultTab} className="space-y-4 sm:space-y-6 animate-fade-in">
+            <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6 animate-fade-in">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <TabsList className="bg-dashboard-bg p-1 sm:p-1.5 rounded-xl sm:rounded-2xl w-full sm:w-auto overflow-x-auto border border-dashboard-border">
                   <TabsTrigger
