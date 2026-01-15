@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import ArticleCard from "@/components/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +9,11 @@ const Growth = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="Personal Growth"
+        description="Unlock your potential through continuous learning and self-improvement. Explore strategies for developing new skills and becoming the best version of yourself."
+        canonical="https://echo-perspective.lovable.app/growth"
+      />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

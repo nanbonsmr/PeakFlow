@@ -1,10 +1,16 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const About = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="About"
+        description="Learn about PeakFlow - a personal blog dedicated to helping you optimize your life through productivity tips, lifestyle insights, and tech tips."
+        canonical="https://echo-perspective.lovable.app/about"
+      />
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

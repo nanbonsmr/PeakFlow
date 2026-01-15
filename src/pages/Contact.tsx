@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -27,6 +28,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="Contact"
+        description="Get in touch with PeakFlow. Have a question, suggestion, or just want to say hello? We'd love to hear from you."
+        canonical="https://echo-perspective.lovable.app/contact"
+      />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
