@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import ArticleCard from "@/components/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { Search as SearchIcon, X, Filter } from "lucide-react";
@@ -55,6 +56,11 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="Search Articles"
+        description="Search through PeakFlow articles on productivity, lifestyle, tech tips, and personal growth."
+        canonical="https://echo-perspective.lovable.app/search"
+      />
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

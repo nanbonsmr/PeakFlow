@@ -6,6 +6,7 @@ import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import FeaturedArticleSelector from "@/components/FeaturedArticleSelector";
 import NewsletterSection from "@/components/NewsletterSection";
+import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,6 +92,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="PeakFlow - Exploring Ideas, Finding Inspiration"
+        description="A space for exploring ideas, finding inspiration, and discovering new ways of seeing the world through productivity, lifestyle, tech tips, and personal growth."
+      />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

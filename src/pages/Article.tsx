@@ -2,6 +2,7 @@ import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import CommentsSection from "@/components/CommentsSection";
+import SEO from "@/components/SEO";
 import { useArticle, useRelatedArticles } from "@/hooks/useArticles";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,19 @@ const Article = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title={article.title}
+        description={article.excerpt || `Read ${article.title} by ${article.author} on PeakFlow.`}
+        type="article"
+        image={article.image}
+        canonical={`https://echo-perspective.lovable.app/article/${article.id}`}
+        article={{
+          author: article.author,
+          publishedTime: article.date,
+          modifiedTime: article.date,
+          category: article.category,
+        }}
+      />
       <Header />
       
       <main>

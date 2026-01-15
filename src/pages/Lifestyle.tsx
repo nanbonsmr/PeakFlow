@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import ArticleCard from "@/components/ArticleCard";
 import { useArticles } from "@/hooks/useArticles";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +9,11 @@ const Lifestyle = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <SEO 
+        title="Lifestyle"
+        description="Design a life that aligns with your values. Explore habits, routines, and mindset shifts for better work-life balance and intentional living."
+        canonical="https://echo-perspective.lovable.app/lifestyle"
+      />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
