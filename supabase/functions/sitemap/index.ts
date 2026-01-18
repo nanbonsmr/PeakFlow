@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
 
     // Get the base URL from request or use published URL
     const url = new URL(req.url)
-    const baseUrl = url.searchParams.get('baseUrl') || 'https://echo-perspective.lovable.app'
+    const baseUrl = url.searchParams.get('baseUrl') || 'https://peakflow-blog.netlify.app'
 
     // Fetch all published articles
     const { data: articles, error } = await supabase

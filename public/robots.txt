@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://echo-perspective.lovable.app/sitemap.xml
+Sitemap: https://peakflow-blog.netlify.app/sitemap.xml
