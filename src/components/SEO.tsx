@@ -15,7 +15,7 @@ interface SEOProps {
   noIndex?: boolean;
 }
 
-const BASE_URL = "https://echo-perspective.lovable.app";
+const BASE_URL = "https://peakflow-blog.netlify.app";
 const DEFAULT_IMAGE = "/og-image.png";
 const SITE_NAME = "PeakFlow";
 
