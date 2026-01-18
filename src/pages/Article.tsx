@@ -55,13 +55,18 @@ const Article = () => {
         description={article.excerpt || `Read ${article.title} by ${article.author} on PeakFlow.`}
         type="article"
         image={article.image}
-        canonical={`https://echo-perspective.lovable.app/article/${article.id}`}
+        canonical={`https://peakflow-blog.netlify.app/article/${article.id}`}
         article={{
           author: article.author,
           publishedTime: article.date,
           modifiedTime: article.date,
           category: article.category,
         }}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: article.category, url: `/${article.category.toLowerCase().replace(/\s+/g, '-')}` },
+          { name: article.title, url: `/article/${article.id}` },
+        ]}
       />
       <Header />
       

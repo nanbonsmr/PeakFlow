@@ -12,7 +12,11 @@ const Productivity = () => {
       <SEO 
         title="Productivity"
         description="Master your time, optimize your workflow, and achieve more with less stress. Discover proven strategies, tools, and frameworks to boost your efficiency."
-        canonical="https://echo-perspective.lovable.app/productivity"
+        canonical="https://peakflow-blog.netlify.app/productivity"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Productivity", url: "/productivity" },
+        ]}
       />
       <Header />
       

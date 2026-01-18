@@ -31,7 +31,11 @@ const Contact = () => {
       <SEO 
         title="Contact"
         description="Get in touch with PeakFlow. Have a question, suggestion, or just want to say hello? We'd love to hear from you."
-        canonical="https://echo-perspective.lovable.app/contact"
+        canonical="https://peakflow-blog.netlify.app/contact"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Contact", url: "/contact" },
+        ]}
       />
       <Header />
       

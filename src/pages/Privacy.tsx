@@ -7,7 +7,7 @@ const Privacy = () => {
       <SEO 
         title="Privacy Policy"
         description="Learn how PeakFlow collects, uses, and protects your personal information. Read our privacy policy."
-        canonical="https://echo-perspective.lovable.app/privacy"
+        canonical="https://peakflow-blog.netlify.app/privacy"
         noIndex
       />
       <Header />

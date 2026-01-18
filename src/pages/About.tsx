@@ -9,7 +9,11 @@ const About = () => {
       <SEO 
         title="About"
         description="Learn about PeakFlow - a personal blog dedicated to helping you optimize your life through productivity tips, lifestyle insights, and tech tips."
-        canonical="https://echo-perspective.lovable.app/about"
+        canonical="https://peakflow-blog.netlify.app/about"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "About", url: "/about" },
+        ]}
       />
       <Header />
       
