@@ -12,7 +12,11 @@ const Lifestyle = () => {
       <SEO 
         title="Lifestyle"
         description="Design a life that aligns with your values. Explore habits, routines, and mindset shifts for better work-life balance and intentional living."
-        canonical="https://echo-perspective.lovable.app/lifestyle"
+        canonical="https://peakflow-blog.netlify.app/lifestyle"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Lifestyle", url: "/lifestyle" },
+        ]}
       />
       <Header />
       

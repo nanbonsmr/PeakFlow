@@ -12,7 +12,11 @@ const Growth = () => {
       <SEO 
         title="Personal Growth"
         description="Unlock your potential through continuous learning and self-improvement. Explore strategies for developing new skills and becoming the best version of yourself."
-        canonical="https://echo-perspective.lovable.app/growth"
+        canonical="https://peakflow-blog.netlify.app/growth"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Personal Growth", url: "/growth" },
+        ]}
       />
       <Header />
       

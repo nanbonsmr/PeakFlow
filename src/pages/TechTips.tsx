@@ -12,7 +12,11 @@ const TechTips = () => {
       <SEO 
         title="Tech Tips"
         description="Stay ahead with the latest tools, apps, and digital strategies. Learn how to leverage technology to work smarter and simplify your digital life."
-        canonical="https://echo-perspective.lovable.app/tech-tips"
+        canonical="https://peakflow-blog.netlify.app/tech-tips"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Tech Tips", url: "/tech-tips" },
+        ]}
       />
       <Header />
       

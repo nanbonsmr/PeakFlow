@@ -7,7 +7,7 @@ const Terms = () => {
       <SEO 
         title="Terms of Service"
         description="Read PeakFlow's terms of service. By using our website, you agree to these terms."
-        canonical="https://echo-perspective.lovable.app/terms"
+        canonical="https://peakflow-blog.netlify.app/terms"
         noIndex
       />
       <Header />

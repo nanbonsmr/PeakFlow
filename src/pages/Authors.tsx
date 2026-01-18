@@ -39,7 +39,11 @@ const Authors = () => {
       <SEO 
         title="Authors"
         description="Meet the writers behind PeakFlow. Experienced authors sharing insights on productivity, lifestyle, tech tips, and personal growth."
-        canonical="https://echo-perspective.lovable.app/authors"
+        canonical="https://peakflow-blog.netlify.app/authors"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Authors", url: "/authors" },
+        ]}
       />
       <Header />
       

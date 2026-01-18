@@ -59,7 +59,11 @@ const Search = () => {
       <SEO 
         title="Search Articles"
         description="Search through PeakFlow articles on productivity, lifestyle, tech tips, and personal growth."
-        canonical="https://echo-perspective.lovable.app/search"
+        canonical="https://peakflow-blog.netlify.app/search"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Search", url: "/search" },
+        ]}
       />
       <Header />
 
