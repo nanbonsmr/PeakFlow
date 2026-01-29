@@ -170,8 +170,11 @@ const Article = () => {
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
             {article.content ? (
               <div 
-                className="text-lg leading-relaxed text-muted-foreground whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />') }}
+                className="article-content text-lg leading-relaxed text-muted-foreground"
+                dangerouslySetInnerHTML={{ 
+                  __html: article.content
+                    .replace(/\n/g, '<br />')
+                }}
               />
             ) : (
               <p className="text-lg leading-relaxed text-muted-foreground">

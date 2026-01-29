@@ -16,7 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ImageIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Loader2, ImageIcon, Link2, ImagePlus } from "lucide-react";
+import { useState, useRef } from "react";
 
 interface ArticleForm {
   title: string;
@@ -55,6 +61,52 @@ const ArticleDialog = ({
   saving,
   isEditing,
 }: ArticleDialogProps) => {
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageAlt, setImageAlt] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
+  const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
+  const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
+
+  const insertAtCursor = (text: string) => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const before = form.content.substring(0, start);
+    const after = form.content.substring(end);
+    
+    const newContent = before + text + after;
+    onFormChange({ ...form, content: newContent });
+    
+    // Restore cursor position after the inserted text
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + text.length, start + text.length);
+    }, 0);
+  };
+
+  const handleInsertImage = () => {
+    if (imageUrl) {
+      const imgTag = `\n<img src="${imageUrl}" alt="${imageAlt || 'Image'}" />\n`;
+      insertAtCursor(imgTag);
+      setImageUrl("");
+      setImageAlt("");
+      setImagePopoverOpen(false);
+    }
+  };
+
+  const handleInsertLink = () => {
+    if (linkUrl && linkText) {
+      const linkTag = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+      insertAtCursor(linkTag);
+      setLinkUrl("");
+      setLinkText("");
+      setLinkPopoverOpen(false);
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -174,17 +226,108 @@ const ArticleDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content" className="text-sm font-medium">
-              Content
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="content" className="text-sm font-medium">
+                Content
+              </Label>
+              <div className="flex items-center gap-2">
+                <Popover open={imagePopoverOpen} onOpenChange={setImagePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                      <ImagePlus className="h-4 w-4" />
+                      Image
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Insert Image</h4>
+                      <div className="space-y-2">
+                        <Label htmlFor="img-url" className="text-xs">Image URL</Label>
+                        <Input
+                          id="img-url"
+                          value={imageUrl}
+                          onChange={(e) => setImageUrl(e.target.value)}
+                          placeholder="https://example.com/image.jpg"
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="img-alt" className="text-xs">Alt Text</Label>
+                        <Input
+                          id="img-alt"
+                          value={imageAlt}
+                          onChange={(e) => setImageAlt(e.target.value)}
+                          placeholder="Describe the image"
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <Button 
+                        onClick={handleInsertImage} 
+                        disabled={!imageUrl}
+                        size="sm"
+                        className="w-full"
+                      >
+                        Insert Image
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                <Popover open={linkPopoverOpen} onOpenChange={setLinkPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                      <Link2 className="h-4 w-4" />
+                      Link
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Insert Link</h4>
+                      <div className="space-y-2">
+                        <Label htmlFor="link-text" className="text-xs">Link Text</Label>
+                        <Input
+                          id="link-text"
+                          value={linkText}
+                          onChange={(e) => setLinkText(e.target.value)}
+                          placeholder="Click here"
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="link-url" className="text-xs">URL</Label>
+                        <Input
+                          id="link-url"
+                          value={linkUrl}
+                          onChange={(e) => setLinkUrl(e.target.value)}
+                          placeholder="https://example.com"
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <Button 
+                        onClick={handleInsertLink} 
+                        disabled={!linkUrl || !linkText}
+                        size="sm"
+                        className="w-full"
+                      >
+                        Insert Link
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
             <Textarea
+              ref={contentRef}
               id="content"
               value={form.content}
               onChange={(e) => onFormChange({ ...form, content: e.target.value })}
-              placeholder="Write your article content here..."
+              placeholder="Write your article content here. Use the buttons above to insert images and links between paragraphs..."
               className="rounded-xl resize-none font-mono text-sm"
-              rows={8}
+              rows={10}
             />
+            <p className="text-xs text-muted-foreground">
+              Tip: Position your cursor where you want to insert, then use the Image or Link buttons.
+            </p>
           </div>
 
           <div className="flex items-center justify-between pt-6 border-t">

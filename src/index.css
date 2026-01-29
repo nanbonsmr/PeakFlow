@@ -1,4 +1,24 @@
 @tailwind base;
+
+/* Article content styles for embedded images and links */
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.5rem 0;
+  display: block;
+}
+
+.article-content a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.article-content a:hover {
+  color: hsl(var(--accent));
+}
 @tailwind components;
 @tailwind utilities;
 
