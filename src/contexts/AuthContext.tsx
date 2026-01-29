@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   loading: boolean;
+  adminLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adminLoading, setAdminLoading] = useState(true);
 
   const checkAdminRole = async (userId: string) => {
     const { data, error } = await supabase
@@ -46,28 +48,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Defer admin check with setTimeout to prevent deadlocks
+        // Check admin role after auth state change
         if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id).then(setIsAdmin);
+          setAdminLoading(true);
+          // Defer admin check with setTimeout to prevent deadlocks
+          setTimeout(async () => {
+            const adminStatus = await checkAdminRole(session.user.id);
+            setIsAdmin(adminStatus);
+            setAdminLoading(false);
           }, 0);
         } else {
           setIsAdmin(false);
+          setAdminLoading(false);
         }
         setLoading(false);
       }
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkAdminRole(session.user.id).then(setIsAdmin);
+        setAdminLoading(true);
+        const adminStatus = await checkAdminRole(session.user.id);
+        setIsAdmin(adminStatus);
+        setAdminLoading(false);
+      } else {
+        setAdminLoading(false);
       }
       setLoading(false);
     });
@@ -108,6 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         session,
         isAdmin,
         loading,
+        adminLoading,
         signIn,
         signUp,
         signOut,

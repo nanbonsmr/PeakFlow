@@ -38,7 +38,8 @@ const Dashboard = () => {
   const {
     user,
     isAdmin,
-    loading
+    loading,
+    adminLoading
   } = useAuth();
   const navigate = useNavigate();
   const {
@@ -71,17 +72,20 @@ const Dashboard = () => {
     edgeWidth: 30
   });
   useEffect(() => {
-    if (!loading && !user) {
+    // Wait for both auth and admin check to complete
+    if (loading || adminLoading) return;
+    
+    if (!user) {
       navigate("/auth");
-    } else if (!loading && user && !isAdmin) {
+    } else if (!isAdmin) {
       toast({
         title: "Access denied",
-        description: "You don't have admin privileges.",
+        description: "You don't have admin privileges. Please contact an administrator if you believe this is an error.",
         variant: "destructive"
       });
       navigate("/");
     }
-  }, [user, isAdmin, loading, navigate, toast]);
+  }, [user, isAdmin, loading, adminLoading, navigate, toast]);
   useEffect(() => {
     if (isAdmin) {
       fetchData();
@@ -123,7 +127,7 @@ const Dashboard = () => {
     return article.title.toLowerCase().includes(query) || article.category.toLowerCase().includes(query) || article.author.toLowerCase().includes(query);
   });
   const recentArticles = filteredArticles.slice(0, 5);
-  if (loading || loadingData) {
+  if (loading || adminLoading || loadingData) {
     return <div className="min-h-screen bg-dashboard-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
@@ -131,7 +135,9 @@ const Dashboard = () => {
               <Loader2 className="h-7 w-7 animate-spin text-white" />
             </div>
           </div>
-          <p className="text-muted-foreground font-medium">Loading dashboard...</p>
+          <p className="text-muted-foreground font-medium">
+            {adminLoading ? "Verifying permissions..." : "Loading dashboard..."}
+          </p>
         </div>
       </div>;
   }
