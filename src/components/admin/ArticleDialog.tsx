@@ -21,7 +21,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Loader2, ImageIcon, Link2, ImagePlus } from "lucide-react";
+import { Loader2, ImageIcon, Link2, ImagePlus, Heading1, Heading2, Heading3 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useState, useRef } from "react";
 
 interface ArticleForm {
@@ -231,6 +237,29 @@ const ArticleDialog = ({
                 Content
               </Label>
               <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                      <Heading1 className="h-4 w-4" />
+                      Heading
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => insertAtCursor("\n<h1></h1>\n")}>
+                      <Heading1 className="h-4 w-4 mr-2" />
+                      Heading 1
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => insertAtCursor("\n<h2></h2>\n")}>
+                      <Heading2 className="h-4 w-4 mr-2" />
+                      Heading 2
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => insertAtCursor("\n<h3></h3>\n")}>
+                      <Heading3 className="h-4 w-4 mr-2" />
+                      Heading 3
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <Popover open={imagePopoverOpen} onOpenChange={setImagePopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className="h-8 gap-1.5">

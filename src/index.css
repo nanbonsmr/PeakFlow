@@ -1,6 +1,6 @@
 @tailwind base;
 
-/* Article content styles for embedded images and links */
+/* Article content styles for embedded images, links, and headings */
 .article-content img {
   max-width: 100%;
   height: auto;
@@ -18,6 +18,33 @@
 
 .article-content a:hover {
   color: hsl(var(--accent));
+}
+
+.article-content h1 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  line-height: 1.3;
+  color: hsl(var(--foreground));
+}
+
+.article-content h2 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.75rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+}
+
+.article-content h3 {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
 }
 @tailwind components;
 @tailwind utilities;
