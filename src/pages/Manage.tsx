@@ -273,18 +273,7 @@ const Manage = () => {
   };
 
   const handleEditArticle = (article: Article) => {
-    setEditingArticle(article);
-    setArticleForm({
-      title: article.title,
-      excerpt: article.excerpt || "",
-      content: article.content || "",
-      category: article.category,
-      image_url: article.image_url || "",
-      author: article.author,
-      read_time: article.read_time || "5 min read",
-      published: article.published,
-    });
-    setIsArticleDialogOpen(true);
+    navigate(`/manage/edit/${article.id}`);
   };
 
   const handleSaveArticle = async () => {
