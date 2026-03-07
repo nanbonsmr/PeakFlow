@@ -28,7 +28,6 @@ import {
 import ArticleRow from "@/components/admin/ArticleRow";
 import UserRow from "@/components/admin/UserRow";
 import SubscriberRow from "@/components/admin/SubscriberRow";
-import ArticleDialog from "@/components/admin/ArticleDialog";
 import { cn } from "@/lib/utils";
 
 interface Article {
@@ -75,25 +74,9 @@ const Manage = () => {
   const [users, setUsers] = useState<UserRole[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [isArticleDialogOpen, setIsArticleDialogOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-  const [savingArticle, setSavingArticle] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  
-
-  const [articleForm, setArticleForm] = useState({
-    title: "",
-    excerpt: "",
-    content: "",
-    category: "general",
-    image_url: "",
-    author: "",
-    read_time: "5 min read",
-    published: false,
-  });
 
   // Swipe gestures for mobile sidebar
   const handleSwipeRight = useCallback(() => {
@@ -258,94 +241,8 @@ const Manage = () => {
     toast({ title: "Subscribers exported successfully" });
   };
 
-  const resetArticleForm = () => {
-    setArticleForm({
-      title: "",
-      excerpt: "",
-      content: "",
-      category: "general",
-      image_url: "",
-      author: "",
-      read_time: "5 min read",
-      published: false,
-    });
-    setEditingArticle(null);
-  };
-
   const handleEditArticle = (article: Article) => {
-    setEditingArticle(article);
-    setArticleForm({
-      title: article.title,
-      excerpt: article.excerpt || "",
-      content: article.content || "",
-      category: article.category,
-      image_url: article.image_url || "",
-      author: article.author,
-      read_time: article.read_time || "5 min read",
-      published: article.published,
-    });
-    setIsArticleDialogOpen(true);
-  };
-
-  const handleSaveArticle = async () => {
-    if (!articleForm.title.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for the article.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSavingArticle(true);
-
-    const articleData = {
-      title: articleForm.title.trim(),
-      excerpt: articleForm.excerpt.trim() || null,
-      content: articleForm.content.trim() || null,
-      category: articleForm.category,
-      image_url: articleForm.image_url.trim() || null,
-      author: articleForm.author.trim() || "Anonymous",
-      read_time: articleForm.read_time.trim() || "5 min read",
-      published: articleForm.published,
-    };
-
-    if (editingArticle) {
-      const { error } = await supabase
-        .from("articles")
-        .update(articleData)
-        .eq("id", editingArticle.id);
-
-      if (error) {
-        toast({
-          title: "Error updating article",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({ title: "Article updated successfully" });
-        fetchArticles();
-        setIsArticleDialogOpen(false);
-        resetArticleForm();
-      }
-    } else {
-      const { error } = await supabase.from("articles").insert([articleData]);
-
-      if (error) {
-        toast({
-          title: "Error creating article",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({ title: "Article created successfully" });
-        fetchArticles();
-        setIsArticleDialogOpen(false);
-        resetArticleForm();
-      }
-    }
-
-    setSavingArticle(false);
+    navigate(`/manage/edit/${article.id}`);
   };
 
   const handleDeleteArticle = async (id: string) => {
@@ -505,10 +402,7 @@ const Manage = () => {
                 </TabsList>
 
                 <Button
-                  onClick={() => {
-                    resetArticleForm();
-                    setIsArticleDialogOpen(true);
-                  }}
+                  onClick={() => navigate("/manage/new")}
                   className="rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto bg-dashboard-accent hover:bg-dashboard-accent/90"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -645,18 +539,6 @@ const Manage = () => {
         </main>
       </div>
 
-      <ArticleDialog
-        open={isArticleDialogOpen}
-        onOpenChange={(open) => {
-          setIsArticleDialogOpen(open);
-          if (!open) resetArticleForm();
-        }}
-        form={articleForm}
-        onFormChange={setArticleForm}
-        onSave={handleSaveArticle}
-        saving={savingArticle}
-        isEditing={!!editingArticle}
-      />
     </div>
   );
 };

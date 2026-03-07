@@ -19,6 +19,7 @@ import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Manage from "./pages/Manage";
+import ArticleEditor from "./pages/ArticleEditor";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
@@ -48,6 +49,8 @@ const App = () => (
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/manage" element={<Manage />} />
+            <Route path="/manage/new" element={<ArticleEditor />} />
+            <Route path="/manage/edit/:id" element={<ArticleEditor />} />
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
