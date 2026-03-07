@@ -505,10 +505,7 @@ const Manage = () => {
                 </TabsList>
 
                 <Button
-                  onClick={() => {
-                    resetArticleForm();
-                    setIsArticleDialogOpen(true);
-                  }}
+                  onClick={() => navigate("/manage/new")}
                   className="rounded-xl shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto bg-dashboard-accent hover:bg-dashboard-accent/90"
                 >
                   <Plus className="h-4 w-4 mr-2" />
