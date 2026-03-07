@@ -28,7 +28,6 @@ import {
 import ArticleRow from "@/components/admin/ArticleRow";
 import UserRow from "@/components/admin/UserRow";
 import SubscriberRow from "@/components/admin/SubscriberRow";
-import ArticleDialog from "@/components/admin/ArticleDialog";
 import { cn } from "@/lib/utils";
 
 interface Article {
