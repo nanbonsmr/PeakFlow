@@ -631,18 +631,6 @@ const Manage = () => {
         </main>
       </div>
 
-      <ArticleDialog
-        open={isArticleDialogOpen}
-        onOpenChange={(open) => {
-          setIsArticleDialogOpen(open);
-          if (!open) resetArticleForm();
-        }}
-        form={articleForm}
-        onFormChange={setArticleForm}
-        onSave={handleSaveArticle}
-        saving={savingArticle}
-        isEditing={!!editingArticle}
-      />
     </div>
   );
 };
