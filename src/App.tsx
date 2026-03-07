@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Article from "./pages/Article";
@@ -18,7 +18,9 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import Manage from "./pages/Manage";
+import ManageArticles from "./pages/ManageArticles";
+import ManageUsers from "./pages/ManageUsers";
+import ManageSubscribers from "./pages/ManageSubscribers";
 import ArticleEditor from "./pages/ArticleEditor";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
@@ -48,7 +50,10 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/manage" element={<Manage />} />
+            <Route path="/manage" element={<Navigate to="/manage/articles" replace />} />
+            <Route path="/manage/articles" element={<ManageArticles />} />
+            <Route path="/manage/users" element={<ManageUsers />} />
+            <Route path="/manage/subscribers" element={<ManageSubscribers />} />
             <Route path="/manage/new" element={<ArticleEditor />} />
             <Route path="/manage/edit/:id" element={<ArticleEditor />} />
             <Route path="/search" element={<Search />} />
