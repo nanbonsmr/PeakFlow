@@ -74,25 +74,9 @@ const Manage = () => {
   const [users, setUsers] = useState<UserRole[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [isArticleDialogOpen, setIsArticleDialogOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-  const [savingArticle, setSavingArticle] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  
-
-  const [articleForm, setArticleForm] = useState({
-    title: "",
-    excerpt: "",
-    content: "",
-    category: "general",
-    image_url: "",
-    author: "",
-    read_time: "5 min read",
-    published: false,
-  });
 
   // Swipe gestures for mobile sidebar
   const handleSwipeRight = useCallback(() => {
