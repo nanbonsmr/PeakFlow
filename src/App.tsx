@@ -19,6 +19,7 @@ import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Manage from "./pages/Manage";
+import ArticleEditor from "./pages/ArticleEditor";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
