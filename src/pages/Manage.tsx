@@ -241,83 +241,8 @@ const Manage = () => {
     toast({ title: "Subscribers exported successfully" });
   };
 
-  const resetArticleForm = () => {
-    setArticleForm({
-      title: "",
-      excerpt: "",
-      content: "",
-      category: "general",
-      image_url: "",
-      author: "",
-      read_time: "5 min read",
-      published: false,
-    });
-    setEditingArticle(null);
-  };
-
   const handleEditArticle = (article: Article) => {
     navigate(`/manage/edit/${article.id}`);
-  };
-
-  const handleSaveArticle = async () => {
-    if (!articleForm.title.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for the article.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSavingArticle(true);
-
-    const articleData = {
-      title: articleForm.title.trim(),
-      excerpt: articleForm.excerpt.trim() || null,
-      content: articleForm.content.trim() || null,
-      category: articleForm.category,
-      image_url: articleForm.image_url.trim() || null,
-      author: articleForm.author.trim() || "Anonymous",
-      read_time: articleForm.read_time.trim() || "5 min read",
-      published: articleForm.published,
-    };
-
-    if (editingArticle) {
-      const { error } = await supabase
-        .from("articles")
-        .update(articleData)
-        .eq("id", editingArticle.id);
-
-      if (error) {
-        toast({
-          title: "Error updating article",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({ title: "Article updated successfully" });
-        fetchArticles();
-        setIsArticleDialogOpen(false);
-        resetArticleForm();
-      }
-    } else {
-      const { error } = await supabase.from("articles").insert([articleData]);
-
-      if (error) {
-        toast({
-          title: "Error creating article",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({ title: "Article created successfully" });
-        fetchArticles();
-        setIsArticleDialogOpen(false);
-        resetArticleForm();
-      }
-    }
-
-    setSavingArticle(false);
   };
 
   const handleDeleteArticle = async (id: string) => {
