@@ -75,7 +75,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
               <CarouselContent className="h-full -ml-0">
                 {featuredArticles.map((article) => (
                   <CarouselItem key={article.id} className="h-full pl-0">
-                    <Link to={`/article/${article.id}`} className="block w-full h-full">
+                    <Link to={`/article/${article.slug || article.id}`} className="block w-full h-full">
                       <img
                         src={article.image_url || "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"}
                         alt={article.title}
