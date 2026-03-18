@@ -173,7 +173,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
                 <span className="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent bg-accent/10 rounded-full border border-accent/20">
                   {currentArticle.category}
                 </span>
-                <Link to={`/article/${currentArticle.id}`} className="block group">
+                <Link to={`/article/${currentArticle.slug || currentArticle.id}`} className="block group">
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight group-hover:text-accent transition-colors duration-300 line-clamp-2">
                     {currentArticle.title}
                   </h1>
