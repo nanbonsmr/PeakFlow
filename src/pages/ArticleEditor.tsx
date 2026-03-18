@@ -295,7 +295,7 @@ const ArticleEditor = () => {
     const metaKeys = form.meta_keywords || generateKeywords(form.title, form.category, form.content);
     const slug = form.slug || generateSlugFromTitle(form.title);
 
-    const articleData: Record<string, any> = {
+    const articleData = {
       title: form.title.trim(),
       excerpt: form.excerpt.trim() || null,
       content: form.content.trim() || null,
