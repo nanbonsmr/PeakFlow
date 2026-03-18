@@ -202,7 +202,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2 animate-slide-up stagger-2">
             {currentArticle ? (
               <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-5 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25 w-full sm:w-auto group">
-                <Link to={`/article/${currentArticle.id}`}>
+                <Link to={`/article/${currentArticle.slug || currentArticle.id}`}>
                   <span>Read Article</span>
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Link>
