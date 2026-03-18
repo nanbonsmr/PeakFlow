@@ -12,6 +12,7 @@ import {
 
 interface FeaturedArticle {
   id: string;
+  slug?: string;
   title: string;
   excerpt: string;
   image_url: string;
