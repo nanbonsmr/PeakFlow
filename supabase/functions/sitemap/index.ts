@@ -15,14 +15,13 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Get the base URL from request or use published URL
     const url = new URL(req.url)
     const baseUrl = url.searchParams.get('baseUrl') || 'https://peakflow-blog.netlify.app'
 
-    // Fetch all published articles
+    // Fetch all published articles with slugs
     const { data: articles, error } = await supabase
       .from('articles')
-      .select('id, updated_at, category')
+      .select('id, slug, updated_at, category, title, image_url')
       .eq('published', true)
       .order('updated_at', { ascending: false })
 
@@ -48,9 +47,10 @@ Deno.serve(async (req) => {
 
     const today = new Date().toISOString().split('T')[0]
 
-    // Build sitemap XML
+    // Build sitemap XML with image support
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 `
 
     // Add static pages
@@ -64,18 +64,31 @@ Deno.serve(async (req) => {
 `
     }
 
-    // Add article pages
+    // Add article pages using slugs for SEO-friendly URLs
     if (articles) {
       for (const article of articles) {
         const lastmod = article.updated_at 
           ? new Date(article.updated_at).toISOString().split('T')[0]
           : today
         
+        const articleSlug = article.slug || article.id
+
         sitemap += `  <url>
-    <loc>${baseUrl}/article/${article.id}</loc>
+    <loc>${baseUrl}/article/${articleSlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.9</priority>`
+
+        // Add image to sitemap if available
+        if (article.image_url) {
+          sitemap += `
+    <image:image>
+      <image:loc>${article.image_url}</image:loc>
+      <image:title>${escapeXml(article.title)}</image:title>
+    </image:image>`
+        }
+
+        sitemap += `
   </url>
 `
       }
@@ -87,7 +100,7 @@ Deno.serve(async (req) => {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=3600',
       },
     })
   } catch (error) {
@@ -106,3 +119,12 @@ Deno.serve(async (req) => {
     )
   }
 })
+
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}

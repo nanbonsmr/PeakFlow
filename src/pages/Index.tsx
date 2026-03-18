@@ -32,7 +32,7 @@ const Index = () => {
   const fetchFeaturedArticles = async () => {
     const { data } = await supabase
       .from("articles")
-      .select("id, title, excerpt, image_url, category")
+      .select("id, slug, title, excerpt, image_url, category")
       .eq("featured", true)
       .eq("published", true)
       .order("updated_at", { ascending: false });
@@ -137,7 +137,7 @@ const Index = () => {
               {displayArticles.map((article, index) => (
                 <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
                   <ArticleCard 
-                    id={article.id}
+                    id={article.slug}
                     title={article.title}
                     category={article.category}
                     date={article.date}

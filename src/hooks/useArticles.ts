@@ -6,6 +6,7 @@ export type Article = Tables<"articles">;
 
 export interface ArticleDisplay {
   id: string;
+  slug: string;
   title: string;
   category: string;
   date: string;
@@ -14,6 +15,8 @@ export interface ArticleDisplay {
   content: string | null;
   author: string;
   readTime: string;
+  metaDescription: string;
+  metaKeywords: string;
 }
 
 const formatDate = (dateString: string): string => {
@@ -25,8 +28,9 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-const mapArticleToDisplay = (article: Article): ArticleDisplay => ({
+const mapArticleToDisplay = (article: any): ArticleDisplay => ({
   id: article.id,
+  slug: article.slug || article.id,
   title: article.title,
   category: article.category,
   date: formatDate(article.created_at),
@@ -35,6 +39,8 @@ const mapArticleToDisplay = (article: Article): ArticleDisplay => ({
   content: article.content,
   author: article.author,
   readTime: article.read_time || "5 min read",
+  metaDescription: article.meta_description || article.excerpt || "",
+  metaKeywords: article.meta_keywords || "",
 });
 
 export const useArticles = (category?: string) => {
@@ -70,7 +76,6 @@ export const useArticles = (category?: string) => {
 
     fetchArticles();
 
-    // Real-time subscription
     const channel = supabase
       .channel("articles-public-changes")
       .on(
@@ -105,12 +110,24 @@ export const useArticle = (id: string | undefined) => {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
+      // Try by slug first, then by id
+      let { data, error: fetchError } = await supabase
         .from("articles")
         .select("*")
-        .eq("id", id)
+        .eq("slug", id)
         .eq("published", true)
         .maybeSingle();
+
+      if (!data) {
+        const result = await supabase
+          .from("articles")
+          .select("*")
+          .eq("id", id)
+          .eq("published", true)
+          .maybeSingle();
+        data = result.data;
+        fetchError = result.error;
+      }
 
       if (fetchError) {
         setError(fetchError.message);
@@ -154,7 +171,6 @@ export const useRelatedArticles = (currentId: string | undefined, category: stri
       if (data && data.length > 0) {
         setArticles(data.map(mapArticleToDisplay));
       } else {
-        // Fallback to any articles if no category match
         const { data: fallbackData } = await supabase
           .from("articles")
           .select("*")

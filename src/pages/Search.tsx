@@ -153,7 +153,7 @@ const Search = () => {
             {filteredArticles.map((article, index) => (
               <div key={article.id} className={`animate-fade-in`} style={{ animationDelay: `${index * 50}ms` }}>
                 <ArticleCard
-                  id={article.id}
+                  id={article.slug}
                   title={article.title}
                   category={article.category}
                   date={article.date}

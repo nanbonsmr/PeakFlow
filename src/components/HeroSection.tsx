@@ -12,6 +12,7 @@ import {
 
 interface FeaturedArticle {
   id: string;
+  slug?: string;
   title: string;
   excerpt: string;
   image_url: string;
@@ -74,7 +75,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
               <CarouselContent className="h-full -ml-0">
                 {featuredArticles.map((article) => (
                   <CarouselItem key={article.id} className="h-full pl-0">
-                    <Link to={`/article/${article.id}`} className="block w-full h-full">
+                    <Link to={`/article/${article.slug || article.id}`} className="block w-full h-full">
                       <img
                         src={article.image_url || "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1920&q=80"}
                         alt={article.title}
@@ -172,7 +173,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
                 <span className="inline-block px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-accent bg-accent/10 rounded-full border border-accent/20">
                   {currentArticle.category}
                 </span>
-                <Link to={`/article/${currentArticle.id}`} className="block group">
+                <Link to={`/article/${currentArticle.slug || currentArticle.id}`} className="block group">
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight group-hover:text-accent transition-colors duration-300 line-clamp-2">
                     {currentArticle.title}
                   </h1>
@@ -201,7 +202,7 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2 animate-slide-up stagger-2">
             {currentArticle ? (
               <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-5 text-base font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25 w-full sm:w-auto group">
-                <Link to={`/article/${currentArticle.id}`}>
+                <Link to={`/article/${currentArticle.slug || currentArticle.id}`}>
                   <span>Read Article</span>
                   <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
                 </Link>
