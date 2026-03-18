@@ -32,7 +32,7 @@ const Index = () => {
   const fetchFeaturedArticles = async () => {
     const { data } = await supabase
       .from("articles")
-      .select("id, title, excerpt, image_url, category")
+      .select("id, slug, title, excerpt, image_url, category")
       .eq("featured", true)
       .eq("published", true)
       .order("updated_at", { ascending: false });
