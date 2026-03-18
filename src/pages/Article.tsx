@@ -8,6 +8,7 @@ import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+
 const Article = () => {
   const { id } = useParams<{ id: string }>();
   const { article, loading, error } = useArticle(id);
@@ -48,14 +49,16 @@ const Article = () => {
     return "tag-lifestyle";
   };
 
+  const articleUrl = `https://peakflow-blog.netlify.app/article/${article.slug}`;
+
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <SEO 
         title={article.title}
-        description={article.excerpt || `Read ${article.title} by ${article.author} on PeakFlow.`}
+        description={article.metaDescription || article.excerpt || `Read ${article.title} by ${article.author} on PeakFlow.`}
         type="article"
         image={article.image}
-        canonical={`https://peakflow-blog.netlify.app/article/${article.id}`}
+        canonical={articleUrl}
         article={{
           author: article.author,
           publishedTime: article.date,
@@ -65,7 +68,7 @@ const Article = () => {
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: article.category, url: `/${article.category.toLowerCase().replace(/\s+/g, '-')}` },
-          { name: article.title, url: `/article/${article.id}` },
+          { name: article.title, url: `/article/${article.slug}` },
         ]}
       />
       <Header />
@@ -73,10 +76,7 @@ const Article = () => {
       <main>
         {/* Back Navigation */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
-          >
+          <a href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to articles
           </a>
@@ -84,15 +84,16 @@ const Article = () => {
 
         {/* Hero Image */}
         <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12">
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={article.image} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
 
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10" itemScope itemType="https://schema.org/Article">
+          <meta itemProp="headline" content={article.title} />
+          <meta itemProp="author" content={article.author} />
+          <meta itemProp="datePublished" content={article.date} />
+          <meta itemProp="image" content={article.image} />
+          
           {/* Article Header */}
           <div className="mb-12 animate-slide-up">
             <div className="flex items-center gap-3 mb-6">
@@ -104,62 +105,39 @@ const Article = () => {
               <span className="text-sm text-muted-foreground">{article.readTime} read</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight" itemProp="name">
               {article.title}
             </h1>
             
             {article.excerpt && (
-              <p className="text-xl text-muted-foreground mb-8">
+              <p className="text-xl text-muted-foreground mb-8" itemProp="description">
                 {article.excerpt}
               </p>
             )}
 
             {/* Author Info */}
             <div className="flex items-center justify-between border-t border-b border-border py-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4" itemProp="author" itemScope itemType="https://schema.org/Person">
                 <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center text-xl font-semibold">
                   {article.author.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold">{article.author}</p>
+                  <p className="font-semibold" itemProp="name">{article.author}</p>
                   <p className="text-sm text-muted-foreground">Author</p>
                 </div>
               </div>
 
-              {/* Share Buttons */}
               <div className="hidden md:flex items-center gap-2">
-                <button
-                  onClick={handleCopyLink}
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                  aria-label="Copy link"
-                >
+                <button onClick={handleCopyLink} className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Copy link">
                   <Link2 className="w-4 h-4" />
                 </button>
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                  aria-label="Share on Twitter"
-                >
+                <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Share on Twitter">
                   <Twitter className="w-4 h-4" />
                 </a>
-                <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                  aria-label="Share on Facebook"
-                >
+                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Share on Facebook">
                   <Facebook className="w-4 h-4" />
                 </a>
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                  aria-label="Share on LinkedIn"
-                >
+                <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Share on LinkedIn">
                   <Linkedin className="w-4 h-4" />
                 </a>
               </div>
@@ -167,13 +145,12 @@ const Article = () => {
           </div>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
+          <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2" itemProp="articleBody">
             {article.content ? (
               <div 
                 className="article-content text-lg leading-relaxed text-muted-foreground"
                 dangerouslySetInnerHTML={{ 
-                  __html: article.content
-                    .replace(/\n/g, '<br />')
+                  __html: article.content.replace(/\n/g, '<br />')
                 }}
               />
             ) : (
@@ -184,35 +161,20 @@ const Article = () => {
           </div>
 
           {/* Comments Section */}
-          <CommentsSection articleId={id!} />
+          <CommentsSection articleId={article.id} />
 
           {/* Mobile Share Buttons */}
           <div className="md:hidden mb-12 pb-12 border-b border-border">
             <p className="text-sm font-semibold mb-4">Share this article</p>
             <div className="flex items-center gap-3">
-              <button
-                onClick={handleCopyLink}
-                className="flex-1 py-3 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center gap-2"
-              >
+              <button onClick={handleCopyLink} className="flex-1 py-3 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center gap-2">
                 <Link2 className="w-4 h-4" />
                 <span className="text-sm">Copy link</span>
               </button>
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                aria-label="Share on Twitter"
-              >
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Share on Twitter">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center"
-                aria-label="Share on Facebook"
-              >
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-border hover:border-primary hover:bg-muted transition-all flex items-center justify-center" aria-label="Share on Facebook">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
@@ -221,18 +183,10 @@ const Article = () => {
           {/* Newsletter CTA */}
           <div className="mb-16 rounded-2xl bg-card p-8 md:p-12 text-center">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Enjoyed this article?</h3>
-            <p className="text-muted-foreground mb-6">
-              Subscribe to receive more insights like this directly in your inbox.
-            </p>
+            <p className="text-muted-foreground mb-6">Subscribe to receive more insights like this directly in your inbox.</p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 px-4 py-3 rounded-full border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8">
-                Subscribe
-              </Button>
+              <input type="email" placeholder="Your email" className="flex-1 px-4 py-3 rounded-full border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring" />
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8">Subscribe</Button>
             </div>
           </div>
         </article>
@@ -253,7 +207,7 @@ const Article = () => {
                   {relatedArticles.map((relatedArticle, index) => (
                     <div key={relatedArticle.id} className={`animate-slide-up stagger-${Math.min(index + 1, 3)}`}>
                       <ArticleCard 
-                        id={relatedArticle.id}
+                        id={relatedArticle.slug}
                         title={relatedArticle.title}
                         category={relatedArticle.category}
                         date={relatedArticle.date}

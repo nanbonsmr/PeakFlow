@@ -41,6 +41,8 @@ import {
   Heading3,
   ArrowLeft,
   Save,
+  Upload,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +53,31 @@ const categories = [
   { value: "growth", label: "Personal Growth" },
 ];
 
+const generateSlugFromTitle = (title: string) => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[\s-]+/g, "-")
+    .replace(/^-|-$/g, "");
+};
+
+const generateMetaDescription = (content: string, excerpt: string) => {
+  if (excerpt && excerpt.length >= 50) return excerpt.substring(0, 160);
+  const stripped = content.replace(/<[^>]*>/g, "").replace(/\n/g, " ").trim();
+  return stripped.substring(0, 160);
+};
+
+const generateKeywords = (title: string, category: string, content: string) => {
+  const words = `${title} ${category} ${content.replace(/<[^>]*>/g, "")}`
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length > 3)
+    .filter((w, i, arr) => arr.indexOf(w) === i)
+    .slice(0, 10);
+  return words.join(", ");
+};
+
 const ArticleEditor = () => {
   const { id } = useParams();
   const isEditing = !!id;
@@ -59,6 +86,8 @@ const ArticleEditor = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -70,6 +99,8 @@ const ArticleEditor = () => {
   const [linkText, setLinkText] = useState("");
   const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -80,6 +111,9 @@ const ArticleEditor = () => {
     author: "",
     read_time: "5 min read",
     published: false,
+    slug: "",
+    meta_description: "",
+    meta_keywords: "",
   });
 
   // Swipe gestures
@@ -108,7 +142,7 @@ const ArticleEditor = () => {
         const { data, error } = await supabase.from("articles").select("*").eq("id", id).single();
         if (error || !data) {
           toast({ title: "Article not found", variant: "destructive" });
-          navigate("/manage");
+          navigate("/manage/articles");
           return;
         }
         setForm({
@@ -120,6 +154,9 @@ const ArticleEditor = () => {
           author: data.author,
           read_time: data.read_time || "5 min read",
           published: data.published,
+          slug: (data as any).slug || "",
+          meta_description: (data as any).meta_description || "",
+          meta_keywords: (data as any).meta_keywords || "",
         });
         setLoadingArticle(false);
       };
@@ -127,13 +164,101 @@ const ArticleEditor = () => {
     }
   }, [id, isAdmin, isEditing, navigate, toast]);
 
+  // Auto-generate slug from title
+  useEffect(() => {
+    if (!isEditing && form.title) {
+      setForm((prev) => ({ ...prev, slug: generateSlugFromTitle(prev.title) }));
+    }
+  }, [form.title, isEditing]);
+
+  // Auto-generate meta description
+  useEffect(() => {
+    if (form.content || form.excerpt) {
+      const autoMeta = generateMetaDescription(form.content, form.excerpt);
+      const autoKeywords = generateKeywords(form.title, form.category, form.content);
+      setForm((prev) => ({
+        ...prev,
+        meta_description: prev.meta_description || autoMeta,
+        meta_keywords: prev.meta_keywords || autoKeywords,
+      }));
+    }
+  }, [form.content, form.excerpt, form.title, form.category]);
+
+  const uploadImage = async (file: File, folder: string = "content") => {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+    const { error } = await supabase.storage.from("article-images").upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+    if (error) throw error;
+
+    const { data } = supabase.storage.from("article-images").getPublicUrl(fileName);
+    return data.publicUrl;
+  };
+
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please select an image file.", variant: "destructive" });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploadingCover(true);
+    try {
+      const url = await uploadImage(file, "covers");
+      setForm({ ...form, image_url: url });
+      toast({ title: "Cover image uploaded!" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleContentImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please select an image file.", variant: "destructive" });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, "content");
+      insertAtCursor(`\n<img src="${url}" alt="${file.name.split('.')[0]}" />\n`);
+      toast({ title: "Image inserted!" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+      setImagePopoverOpen(false);
+    }
+  };
+
   const insertAtCursor = (text: string) => {
     const textarea = contentRef.current;
     if (!textarea) return;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const newContent = form.content.substring(0, start) + text + form.content.substring(end);
-    setForm({ ...form, content: newContent });
+    setForm((prev) => ({ ...prev, content: newContent }));
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + text.length, start + text.length);
@@ -164,7 +289,13 @@ const ArticleEditor = () => {
       return;
     }
     setSaving(true);
-    const articleData = {
+
+    // Auto-generate SEO fields if empty
+    const metaDesc = form.meta_description || generateMetaDescription(form.content, form.excerpt);
+    const metaKeys = form.meta_keywords || generateKeywords(form.title, form.category, form.content);
+    const slug = form.slug || generateSlugFromTitle(form.title);
+
+    const articleData: Record<string, any> = {
       title: form.title.trim(),
       excerpt: form.excerpt.trim() || null,
       content: form.content.trim() || null,
@@ -173,6 +304,9 @@ const ArticleEditor = () => {
       author: form.author.trim() || "Anonymous",
       read_time: form.read_time.trim() || "5 min read",
       published: form.published,
+      slug,
+      meta_description: metaDesc,
+      meta_keywords: metaKeys,
     };
 
     const { error } = isEditing
@@ -182,8 +316,8 @@ const ArticleEditor = () => {
     if (error) {
       toast({ title: `Error ${isEditing ? "updating" : "creating"} article`, description: error.message, variant: "destructive" });
     } else {
-      toast({ title: `Article ${isEditing ? "updated" : "created"} successfully` });
-      navigate("/manage?tab=articles");
+      toast({ title: `Article ${isEditing ? "updated" : "created"} successfully`, description: "SEO metadata has been automatically generated." });
+      navigate("/manage/articles");
     }
     setSaving(false);
   };
@@ -221,7 +355,7 @@ const ArticleEditor = () => {
             {/* Header */}
             <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
               <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" onClick={() => navigate("/manage?tab=articles")} className="rounded-xl">
+                <Button variant="ghost" size="icon" onClick={() => navigate("/manage/articles")} className="rounded-xl">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <div>
@@ -241,22 +375,51 @@ const ArticleEditor = () => {
 
             {/* Editor Content */}
             <div className="space-y-6 animate-fade-in">
-              {/* Image Preview */}
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-muted border border-border/50">
+              {/* Cover Image with Upload */}
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-muted border border-border/50 group">
                 {form.image_url ? (
                   <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mb-2" />
-                    <p className="text-sm">Add an image URL below</p>
+                    <p className="text-sm">Add a cover image</p>
                   </div>
                 )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => coverFileInputRef.current?.click()}
+                    disabled={uploadingCover}
+                    className="gap-2"
+                  >
+                    {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    Upload Image
+                  </Button>
+                </div>
+                <input
+                  ref={coverFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleCoverImageUpload}
+                />
               </div>
 
               {/* Title */}
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-sm font-medium">Title <span className="text-destructive">*</span></Label>
                 <Input id="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Enter an engaging article title" className="rounded-xl text-lg font-medium" />
+              </div>
+
+              {/* Slug */}
+              <div className="space-y-2">
+                <Label htmlFor="slug" className="text-sm font-medium flex items-center gap-2">
+                  <Search className="h-3.5 w-3.5 text-muted-foreground" />
+                  SEO Slug
+                </Label>
+                <Input id="slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-generated-from-title" className="rounded-xl text-sm font-mono" />
+                <p className="text-xs text-muted-foreground">URL: /article/{form.slug || "your-article-slug"}</p>
               </div>
 
               {/* Author & Category */}
@@ -281,8 +444,8 @@ const ArticleEditor = () => {
               {/* Image URL & Read Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="image_url" className="text-sm font-medium">Image URL</Label>
-                  <Input id="image_url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://example.com/image.jpg" className="rounded-xl" />
+                  <Label htmlFor="image_url" className="text-sm font-medium">Cover Image URL</Label>
+                  <Input id="image_url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="Or paste a URL here" className="rounded-xl" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="read_time" className="text-sm font-medium">Read Time</Label>
@@ -329,13 +492,40 @@ const ArticleEditor = () => {
                       <PopoverContent className="w-80" align="end">
                         <div className="space-y-3">
                           <h4 className="font-medium text-sm">Insert Image</h4>
+                          
+                          {/* Upload option */}
+                          <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleContentImageUpload}
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploading}
+                              className="gap-2 w-full"
+                            >
+                              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                              {uploading ? "Uploading..." : "Upload from device"}
+                            </Button>
+                            <p className="text-xs text-muted-foreground mt-2">Max 5MB • JPG, PNG, WebP</p>
+                          </div>
+
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                            <div className="relative flex justify-center text-xs uppercase"><span className="bg-popover px-2 text-muted-foreground">or paste URL</span></div>
+                          </div>
+
                           <div className="space-y-2">
-                            <Label htmlFor="img-url" className="text-xs">Image URL</Label>
                             <Input id="img-url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://example.com/image.jpg" className="h-8 text-sm" />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="img-alt" className="text-xs">Alt Text</Label>
-                            <Input id="img-alt" value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} placeholder="Describe the image" className="h-8 text-sm" />
+                            <Label htmlFor="img-alt" className="text-xs">Alt Text (SEO)</Label>
+                            <Input id="img-alt" value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} placeholder="Describe the image for SEO" className="h-8 text-sm" />
                           </div>
                           <Button onClick={handleInsertImage} disabled={!imageUrl} size="sm" className="w-full">Insert Image</Button>
                         </div>
@@ -377,6 +567,53 @@ const ArticleEditor = () => {
                 <p className="text-xs text-muted-foreground">
                   Tip: Position your cursor where you want to insert, then use the Heading, Image, or Link buttons.
                 </p>
+              </div>
+
+              {/* SEO Section */}
+              <div className="space-y-4 border border-border rounded-xl p-4 sm:p-6 bg-card/50">
+                <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-sm">SEO Settings</h3>
+                  <span className="text-xs text-muted-foreground">(Auto-generated if left empty)</span>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meta_description" className="text-sm font-medium">Meta Description</Label>
+                  <Textarea
+                    id="meta_description"
+                    value={form.meta_description}
+                    onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                    placeholder="Auto-generated from content..."
+                    className="rounded-xl resize-none text-sm"
+                    rows={2}
+                  />
+                  <p className="text-xs text-muted-foreground">{form.meta_description.length}/160 characters</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meta_keywords" className="text-sm font-medium">Meta Keywords</Label>
+                  <Input
+                    id="meta_keywords"
+                    value={form.meta_keywords}
+                    onChange={(e) => setForm({ ...form, meta_keywords: e.target.value })}
+                    placeholder="Auto-generated from content..."
+                    className="rounded-xl text-sm"
+                  />
+                </div>
+
+                {/* SEO Preview */}
+                <div className="border border-border rounded-lg p-4 bg-background">
+                  <p className="text-xs text-muted-foreground mb-2">Google Search Preview</p>
+                  <p className="text-blue-600 text-base font-medium truncate">
+                    {form.title || "Article Title"} | PeakFlow
+                  </p>
+                  <p className="text-green-700 text-xs truncate">
+                    peakflow-blog.netlify.app/article/{form.slug || "your-article-slug"}
+                  </p>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                    {form.meta_description || form.excerpt || "Article description will appear here..."}
+                  </p>
+                </div>
               </div>
 
               {/* Publish Toggle & Save */}
