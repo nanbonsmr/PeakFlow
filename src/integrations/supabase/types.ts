@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_settings: {
+        Row: {
+          ad_client: string
+          ad_format: string
+          ad_slot: string
+          ad_slot_name: string
+          created_at: string
+          custom_style: string | null
+          id: string
+          is_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          ad_client?: string
+          ad_format?: string
+          ad_slot?: string
+          ad_slot_name: string
+          created_at?: string
+          custom_style?: string | null
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ad_client?: string
+          ad_format?: string
+          ad_slot?: string
+          ad_slot_name?: string
+          created_at?: string
+          custom_style?: string | null
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author: string
