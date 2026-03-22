@@ -147,6 +147,12 @@ const Article = () => {
             </div>
           </div>
 
+          {/* Ad Before Content */}
+          {(() => {
+            const beforeAd = getAd("before_content");
+            return beforeAd ? <AdUnit adClient={beforeAd.ad_client} adSlot={beforeAd.ad_slot} adFormat={beforeAd.ad_format} className="mb-8" /> : null;
+          })()}
+
           {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2" itemProp="articleBody">
             {article.content ? (
@@ -162,6 +168,12 @@ const Article = () => {
               </p>
             )}
           </div>
+
+          {/* Ad After Content */}
+          {(() => {
+            const afterAd = getAd("after_content");
+            return afterAd ? <AdUnit adClient={afterAd.ad_client} adSlot={afterAd.ad_slot} adFormat={afterAd.ad_format} className="mb-8" /> : null;
+          })()}
 
           {/* Comments Section */}
           <CommentsSection articleId={article.id} />
