@@ -2,8 +2,10 @@ import { useParams, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import CommentsSection from "@/components/CommentsSection";
+import AdUnit from "@/components/AdUnit";
 import SEO from "@/components/SEO";
 import { useArticle, useRelatedArticles } from "@/hooks/useArticles";
+import { usePublicAds } from "@/hooks/useAdSettings";
 import { Facebook, Twitter, Linkedin, Link2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -13,6 +15,7 @@ const Article = () => {
   const { id } = useParams<{ id: string }>();
   const { article, loading, error } = useArticle(id);
   const { articles: relatedArticles, loading: relatedLoading } = useRelatedArticles(id, article?.category);
+  const { getAd } = usePublicAds();
   
   if (loading) {
     return (
@@ -144,6 +147,12 @@ const Article = () => {
             </div>
           </div>
 
+          {/* Ad Before Content */}
+          {(() => {
+            const beforeAd = getAd("before_content");
+            return beforeAd ? <AdUnit adClient={beforeAd.ad_client} adSlot={beforeAd.ad_slot} adFormat={beforeAd.ad_format} className="mb-8" /> : null;
+          })()}
+
           {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2" itemProp="articleBody">
             {article.content ? (
@@ -159,6 +168,12 @@ const Article = () => {
               </p>
             )}
           </div>
+
+          {/* Ad After Content */}
+          {(() => {
+            const afterAd = getAd("after_content");
+            return afterAd ? <AdUnit adClient={afterAd.ad_client} adSlot={afterAd.ad_slot} adFormat={afterAd.ad_format} className="mb-8" /> : null;
+          })()}
 
           {/* Comments Section */}
           <CommentsSection articleId={article.id} />
