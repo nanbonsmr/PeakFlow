@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, FileText, Users, Mail, Home, ChevronLeft, X } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Mail, Home, ChevronLeft, X, MonitorPlay } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const menuItems = [
@@ -8,6 +8,7 @@ const menuItems = [
   { title: "Articles", icon: FileText, href: "/manage/articles" },
   { title: "Users", icon: Users, href: "/manage/users" },
   { title: "Subscribers", icon: Mail, href: "/manage/subscribers" },
+  { title: "Ads", icon: MonitorPlay, href: "/manage/ads" },
 ];
 
 const bottomItems = [
