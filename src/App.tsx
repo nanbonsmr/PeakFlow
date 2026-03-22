@@ -22,6 +22,7 @@ import ManageArticles from "./pages/ManageArticles";
 import ManageUsers from "./pages/ManageUsers";
 import ManageSubscribers from "./pages/ManageSubscribers";
 import ArticleEditor from "./pages/ArticleEditor";
+import ManageAds from "./pages/ManageAds";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
