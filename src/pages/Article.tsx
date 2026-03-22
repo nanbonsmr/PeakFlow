@@ -15,6 +15,7 @@ const Article = () => {
   const { id } = useParams<{ id: string }>();
   const { article, loading, error } = useArticle(id);
   const { articles: relatedArticles, loading: relatedLoading } = useRelatedArticles(id, article?.category);
+  const { getAd } = usePublicAds();
   
   if (loading) {
     return (
