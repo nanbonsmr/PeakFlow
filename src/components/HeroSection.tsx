@@ -56,7 +56,24 @@ const HeroSection = ({ featuredArticles = [], isAdmin, onEditFeatured }: HeroSec
   const hasFeatures = featuredArticles.length > 0;
   const currentArticle = hasFeatures ? featuredArticles[current] : null;
 
+  // No featured articles: hide hero entirely for visitors, show a compact admin prompt for admins
+  if (!hasFeatures) {
+    if (!isAdmin) return null;
+    return (
+      <section className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-muted via-muted to-card my-12 p-10 md:p-14 flex flex-col items-center justify-center text-center animate-fade-in">
+        <Sparkles className="w-8 h-8 text-accent mb-4" />
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">No featured articles yet</h2>
+        <p className="text-muted-foreground mb-6 max-w-md">Select articles to feature in the hero carousel.</p>
+        <Button onClick={onEditFeatured} className="rounded-full">
+          <Plus className="w-4 h-4 mr-2" />
+          Set Featured
+        </Button>
+      </section>
+    );
+  }
+
   return (
+
     <section className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-muted via-muted to-card my-12 animate-fade-in">
       {/* Decorative elements */}
       <div className="absolute top-10 right-10 w-32 h-32 bg-accent/10 rounded-full blur-3xl animate-glow-pulse" />
