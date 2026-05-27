@@ -1,0 +1,1 @@
+UPDATE public.articles SET featured = false WHERE id = '6e6e6099-6c61-4b75-ad1c-212bfd6a4d5d';
