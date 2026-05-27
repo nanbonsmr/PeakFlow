@@ -159,16 +159,8 @@ const Index = () => {
         <NewsletterSection />
       </main>
 
-      {/* Floating Admin Button */}
-      {!user ? (
-        <Link
-          to="/auth"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-        >
-          <Shield className="h-4 w-4" />
-          <span>Admin Login</span>
-        </Link>
-      ) : isAdmin ? (
+      {/* Floating Admin Dashboard Button — only when admin is logged in */}
+      {user && isAdmin && (
         <Link
           to="/admin"
           className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
@@ -181,7 +173,7 @@ const Index = () => {
             </span>
           )}
         </Link>
-      ) : null}
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border mt-16">
@@ -220,14 +212,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold mb-4">Account</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                {!user ? (
-                  <li>
-                    <Link to="/auth" className="hover:text-accent transition-colors inline-flex items-center gap-1.5">
-                      <Shield className="h-3.5 w-3.5" />
-                      Admin Login
-                    </Link>
-                  </li>
-                ) : isAdmin ? (
+                {user && isAdmin ? (
                   <li>
                     <Link to="/admin" className="hover:text-accent transition-colors inline-flex items-center gap-1.5">
                       <Shield className="h-3.5 w-3.5" />
