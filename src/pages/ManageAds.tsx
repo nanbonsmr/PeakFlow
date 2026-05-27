@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Loader2, MonitorPlay, Plus, Trash2, Save } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AdAnalytics from "@/components/admin/AdAnalytics";
 
 interface AdSetting {
   id: string;
@@ -198,6 +199,9 @@ const ManageAds = () => {
                 </div>
               </div>
             </div>
+
+            {/* Performance Analytics */}
+            <AdAnalytics />
 
             {/* Global Publisher ID */}
             <Card className="bg-dashboard-card border-dashboard-border rounded-2xl animate-fade-in">
