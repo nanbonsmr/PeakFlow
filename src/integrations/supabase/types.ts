@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_events: {
+        Row: {
+          ad_setting_id: string | null
+          ad_slot_name: string
+          article_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          ad_setting_id?: string | null
+          ad_slot_name: string
+          article_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          ad_setting_id?: string | null
+          ad_slot_name?: string
+          article_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_events_ad_setting_id_fkey"
+            columns: ["ad_setting_id"]
+            isOneToOne: false
+            referencedRelation: "ad_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ad_settings: {
         Row: {
           ad_client: string

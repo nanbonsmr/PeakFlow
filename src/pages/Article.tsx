@@ -150,7 +150,7 @@ const Article = () => {
           {/* Ad Before Content */}
           {(() => {
             const beforeAd = getAd("before_content");
-            return beforeAd ? <AdUnit adClient={beforeAd.ad_client} adSlot={beforeAd.ad_slot} adFormat={beforeAd.ad_format} className="mb-8" /> : null;
+            return beforeAd ? <AdUnit adClient={beforeAd.ad_client} adSlot={beforeAd.ad_slot} adFormat={beforeAd.ad_format} slotName="before_content" adSettingId={beforeAd.id} articleId={article.id} className="mb-8" /> : null;
           })()}
 
           {/* Article Content */}
@@ -172,7 +172,7 @@ const Article = () => {
           {/* Ad After Content */}
           {(() => {
             const afterAd = getAd("after_content");
-            return afterAd ? <AdUnit adClient={afterAd.ad_client} adSlot={afterAd.ad_slot} adFormat={afterAd.ad_format} className="mb-8" /> : null;
+            return afterAd ? <AdUnit adClient={afterAd.ad_client} adSlot={afterAd.ad_slot} adFormat={afterAd.ad_format} slotName="after_content" adSettingId={afterAd.id} articleId={article.id} className="mb-8" /> : null;
           })()}
 
           {/* Comments Section */}
